@@ -6,224 +6,805 @@
 <title>🔬 國小物理遊戲樂園</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: white; overflow-x: hidden; }
-.header { background: linear-gradient(135deg, #e94560, #ff6b6b, #ffd93d); padding: 30px; text-align: center; border-radius: 0 0 50px 50px; box-shadow: 0 10px 40px rgba(233, 69, 96, 0.3); }
-.header h1 { font-size: 2.5rem; font-weight: 900; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); margin-bottom: 10px; }
-.header p { font-size: 1.2rem; opacity: 0.9; }
-.game-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-.game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
-.game-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px; text-align: center; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s ease; }
-.game-card:hover { transform: translateY(-10px) scale(1.02); border-color: #ffd93d; box-shadow: 0 20px 60px rgba(255, 217, 61, 0.2); }
-.game-icon { font-size: 5rem; margin-bottom: 15px; }
-.game-card h2 { font-size: 1.5rem; margin-bottom: 10px; color: #ffd93d; }
-.game-card p { font-size: 0.95rem; color: rgba(255,255,255,0.7); }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-.modal.active { display: flex; }
-.modal-content { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 24px; padding: 30px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; border: 2px solid rgba(255,255,255,0.2); }
-.close-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; opacity: 0.7; transition: opacity 0.3s; }
-.close-btn:hover { opacity: 1; }
-.game-area { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 20px; margin: 20px 0; min-height: 300px; position: relative; overflow: hidden; }
-.spring-container { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 350px; padding-top: 20px; }
-.spring-top { width: 120px; height: 30px; background: linear-gradient(90deg, #888, #ccc, #888); border-radius: 8px; position: relative; }
-.spring-coil { width: 40px; height: 0; background: repeating-linear-gradient(180deg, #e94560 0px, #e94560 8px, transparent 8px, transparent 16px); margin: 0 auto; transition: height 0.3s ease; }
-.spring-ball { width: 80px; height: 80px; background: radial-gradient(circle at 30% 30%, #ff6b6b, #e94560); border-radius: 50%; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); transition: bottom 0.3s ease; box-shadow: 0 10px 30px rgba(233, 69, 96, 0.5); }
-.slider-container { margin-top: 30px; text-align: center; }
-.slider-container label { display: block; margin-bottom: 10px; font-size: 1.1rem; }
-.slider-container input[type="range"] { width: 250px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.2); outline: none; -webkit-appearance: none; }
-.slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #ffd93d; border-radius: 50%; cursor: pointer; }
-.info-box { background: rgba(255, 217, 61, 0.1); border: 2px solid #ffd93d; border-radius: 12px; padding: 15px; margin-top: 20px; }
-.info-box h3 { color: #ffd93d; margin-bottom: 8px; }
-.seesaw-container { position: relative; height: 350px; }
-.seesaw-stand { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 100px; background: linear-gradient(90deg, #888, #ccc, #888); border-radius: 4px; }
-.seesaw-plank { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 300px; height: 15px; background: linear-gradient(90deg, #8B4513, #D2691E, #8B4513); border-radius: 8px; transition: transform 0.3s ease; }
-.seesaw-weight { position: absolute; width: 50px; height: 50px; background: radial-gradient(circle at 30% 30%, #4ecdc4, #26a69a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
-.seesaw-weight.heavy { background: radial-gradient(circle at 30% 30%, #e94560, #c73e54); }
-.seesaw-weight.left { top: -70px; left: 30px; }
-.seesaw-weight.right { top: -70px; right: 30px; }
-.shadow-container { position: relative; height: 350px; background: linear-gradient(180deg, #87CEEB 0%, #ffd93d 100%); border-radius: 16px; overflow: hidden; }
-.sun { position: absolute; top: 30px; left: 100px; width: 60px; height: 60px; background: radial-gradient(circle, #ffd93d, #ff6b35); border-radius: 50%; box-shadow: 0 0 40px #ffd93d; }
-.object { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 40px; height: 100px; background: linear-gradient(90deg, #333, #666, #333); border-radius: 8px; }
-.shadow-area { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: rgba(0,0,0,0.4); filter: blur(5px); border-radius: 50%; transition: all 0.3s ease; }
-.reflection-container { position: relative; height: 350px; background: linear-gradient(180deg, #1a1a2e, #0a0a1a); border-radius: 16px; overflow: hidden; }
-.laser { position: absolute; bottom: 50px; left: 50px; width: 200px; height: 3px; background: linear-gradient(90deg, #e94560, transparent); transform-origin: left center; transition: transform 0.3s ease; }
-.laser::before { content: ''; position: absolute; left: -8px; top: -4px; width: 12px; height: 12px; background: #e94560; border-radius: 50%; box-shadow: 0 0 15px #e94560; }
-.mirror { position: absolute; bottom: 80px; right: 150px; width: 120px; height: 8px; background: linear-gradient(90deg, #ccc, #fff, #ccc); border-radius: 4px; transform: rotate(-30deg); transform-origin: center center; transition: transform 0.3s ease; }
-.target { position: absolute; top: 50px; right: 50px; width: 50px; height: 50px; background: radial-gradient(circle, #4ecdc4, #26a69a); border-radius: 50%; box-shadow: 0 0 20px rgba(78, 205, 196, 0.5); }
-.hit-effect { position: absolute; top: 50px; right: 50px; width: 50px; height: 50px; border-radius: 50%; background: #ffd93d; opacity: 0; transform: scale(0); transition: all 0.3s ease; }
-.hit-effect.active { opacity: 1; transform: scale(2); }
-.footer { text-align: center; padding: 30px; color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 40px; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #ff6b9d, #ffa8c5, #ffd93d);
+  padding: 25px 20px;
+  text-align: center;
+  border-radius: 0 0 40px 40px;
+  box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+  margin-bottom: 8px;
+}
+
+.header p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.9);
+}
+
+.game-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 0 15px;
+}
+
+.game-intro {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.game-intro h2 {
+  color: #ff6b9d;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.game-intro p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.game-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa, #fff);
+}
+
+.card-icon {
+  font-size: 3.5rem;
+  margin-right: 15px;
+}
+
+.card-title {
+  flex: 1;
+}
+
+.card-title h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.card-title span {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.card-arrow {
+  font-size: 1.5rem;
+  color: #ccc;
+}
+
+.card-content {
+  display: none;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.card-content.active {
+  display: block;
+}
+
+.info-section {
+  background: linear-gradient(135deg, #fff9e6, #fff);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 4px solid #ffd93d;
+}
+
+.info-section h4 {
+  color: #ff9f43;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-section p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.play-section {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+}
+
+.play-section h4 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.spring-demo {
+  position: relative;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+
+.spring-top-bar {
+  width: 100px;
+  height: 12px;
+  background: linear-gradient(180deg, #aaa, #ddd, #aaa);
+  border-radius: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.spring-string {
+  width: 6px;
+  height: 30px;
+  background: repeating-linear-gradient(180deg, #ff6b9d, #ff6b9d 6px, transparent 6px, transparent 12px);
+  transition: height 0.3s ease;
+}
+
+.spring-body {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 30% 30%, #ff9a9e, #ff6b9d);
+  border-radius: 50%;
+  position: relative;
+  transition: transform 0.3s ease, bottom 0.3s ease;
+  bottom: 0;
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+}
+
+.spring-body::after {
+  content: '🎾';
+  position: absolute;
+  font-size: 2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spring-ground {
+  width: 140px;
+  height: 15px;
+  background: linear-gradient(180deg, #8B7355, #6B5344);
+  border-radius: 8px;
+  margin-top: -5px;
+}
+
+.slider-row {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.slider-row label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.slider-row input[type="range"] {
+  width: 180px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ddd, #667eea);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(135deg, #ff6b9d, #667eea);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.result-text {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: white;
+  border-radius: 20px;
+  display: inline-block;
+  font-weight: 600;
+  color: #667eea;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.seesaw-demo {
+  position: relative;
+  height: 180px;
+}
+
+.seesaw-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 60px;
+  background: linear-gradient(90deg, #888, #bbb, #888);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+}
+
+.seesaw-plank {
+  position: absolute;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 14px;
+  background: linear-gradient(90deg, #f093fb, #f5576c);
+  border-radius: 7px;
+  transition: transform 0.4s ease;
+  box-shadow: 0 3px 10px rgba(245, 87, 108, 0.3);
+}
+
+.weight {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: white;
+  bottom: 0;
+  transition: all 0.3s ease;
+}
+
+.weight.left {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  left: 25px;
+}
+
+.weight.right {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  right: 25px;
+}
+
+.weight.big {
+  width: 55px;
+  height: 55px;
+  font-size: 0.85rem;
+}
+
+.seesaw-ball {
+  position: absolute;
+  bottom: 65px;
+  width: 12px;
+  height: 12px;
+  background: #ffd93d;
+  border-radius: 50%;
+  transition: left 0.3s ease;
+}
+
+.seesaw-ball.left { left: 85px; }
+.seesaw-ball.right { right: 85px; }
+
+.shadow-demo {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(180deg, #87CEEB, #ffd93d 100%);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.shadow-sun {
+  position: absolute;
+  top: 20px;
+  left: 80px;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #ffd93d, #ff9f43);
+  border-radius: 50%;
+  box-shadow: 0 0 30px #ffd93d;
+}
+
+.shadow-stick {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 80px;
+  background: linear-gradient(90deg, #4a4a4a, #6a6a6a, #4a4a4a);
+  border-radius: 4px;
+}
+
+.shadow-line {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 35px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 50%;
+  filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.sun-angle-hint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.8);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.reflection-demo {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(180deg, #1a1a2e, #16213e);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.laser-source {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #e94560, #ff6b6b);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.laser-beam {
+  position: absolute;
+  bottom: 43px;
+  left: 58px;
+  width: 150px;
+  height: 4px;
+  background: linear-gradient(90deg, #e94560, rgba(233, 69, 96, 0.3));
+  transform-origin: left center;
+  transition: transform 0.3s ease;
+  border-radius: 2px;
+}
+
+.laser-beam::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  background: #e94560;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #e94560;
+}
+
+.mirror-surface {
+  position: absolute;
+  bottom: 50px;
+  right: 120px;
+  width: 100px;
+  height: 8px;
+  background: linear-gradient(180deg, #fff, #ccc);
+  border-radius: 4px;
+  transform: rotate(-30deg);
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+}
+
+.mirror-stand {
+  position: absolute;
+  bottom: 30px;
+  right: 155px;
+  width: 8px;
+  height: 30px;
+  background: #666;
+  border-radius: 4px;
+}
+
+.reflected-beam {
+  position: absolute;
+  bottom: 43px;
+  right: 50px;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(233, 69, 96, 0.3), #e94560);
+  transform-origin: left center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  border-radius: 2px;
+}
+
+.reflected-beam.visible {
+  opacity: 1;
+}
+
+.target-circle {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #4ecdc4, #26a69a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+}
+
+.hit-star {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  font-size: 2.5rem;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.hit-star.visible {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.angle-display {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.2);
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.footer {
+  text-align: center;
+  padding: 25px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+}
 </style>
 </head>
 <body>
+
 <div class="header">
   <h1>🔬 國小物理遊戲樂園</h1>
-  <p>動手玩遊戲，快樂學物理！</p>
+  <p>動手玩遊戲，快樂學物理！✨</p>
 </div>
+
 <div class="game-container">
-  <div class="game-grid">
-    <div class="game-card" onclick="openGame('spring')">
-      <div class="game-icon">🦘</div>
-      <h2>彈簧跳跳</h2>
-      <p>拉彈簧看物體彈跳，學習彈力與位能！</p>
-    </div>
-    <div class="game-card" onclick="openGame('seesaw')">
-      <div class="game-icon">⚖️</div>
-      <h2>翹翹板平衡</h2>
-      <p>調整重量和位置保持平衡，學習槓桿原理！</p>
-    </div>
-    <div class="game-card" onclick="openGame('shadow')">
-      <div class="game-icon">🌑</div>
-      <h2>影子變變變</h2>
-      <p>移動光源看影子變化，學習光直進與遮蔽！</p>
-    </div>
-    <div class="game-card" onclick="openGame('reflection')">
-      <div class="game-icon">🔦</div>
-      <h2>光纖反射</h2>
-      <p>調整角度讓光反射，學習反射定律！</p>
-    </div>
-  </div>
-</div>
 
-<!-- Spring Modal -->
-<div class="modal" id="spring-modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeGame('spring')">✕</span>
-    <h2>🦘 彈簧跳跳</h2>
-    <p>拉動滑桿，觀察彈簧的變化！</p>
-    <div class="game-area">
-      <div class="spring-container">
-        <div class="spring-top"></div>
-        <div class="spring-coil" id="spring-coil"></div>
-        <div class="spring-ball" id="spring-ball"></div>
+  <!-- 彈簧遊戲 -->
+  <div class="game-card" onclick="toggleCard('spring')">
+    <div class="card-header">
+      <div class="card-icon">🦘</div>
+      <div class="card-title">
+        <h3>🦘 彈簧跳跳 - 學習彈力</h3>
+        <span>拉一拉，觀察彈簧的變化！</span>
       </div>
+      <div class="card-arrow">▶</div>
     </div>
-    <div class="slider-container">
-      <label>拉多長？</label>
-      <input type="range" id="spring-slider" min="0" max="100" value="0" oninput="updateSpring(this.value)">
-      <p id="spring-info">彈簧長度：100px</p>
-    </div>
-    <div class="info-box">
-      <h3>💡 物理小知識</h3>
-      <p>彈簧被拉越長，儲存的彈力位能就越大！放手時彈力會把物體彈回去，這就是位能轉換成動能！</p>
-    </div>
-  </div>
-</div>
-
-<!-- Seesaw Modal -->
-<div class="modal" id="seesaw-modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeGame('seesaw')">✕</span>
-    <h2>⚖️ 翹翹板平衡</h2>
-    <p>調整右邊重量，讓翹翹板保持水平！</p>
-    <div class="game-area">
-      <div class="seesaw-container">
-        <div class="seesaw-stand"></div>
-        <div class="seesaw-plank" id="seesaw-plank">
-          <div class="seesaw-weight left">1kg</div>
-          <div class="seesaw-weight right" id="weight-right">1kg</div>
+    <div class="card-content" id="spring-content">
+      <div class="info-section">
+        <h4>💡 物理小知識</h4>
+        <p>當你拉彈簧時，彈簧會變長並儲存<strong>彈力位能</strong>。放開時，這個能量會把球彈回去！拉的越長，彈力越大，球就跳得越高！</p>
+      </div>
+      <div class="play-section">
+        <h4>🎮 動手玩</h4>
+        <div class="spring-demo">
+          <div class="spring-top-bar"></div>
+          <div class="spring-string" id="spring-string"></div>
+          <div class="spring-body" id="spring-ball"></div>
+          <div class="spring-ground"></div>
         </div>
+        <div class="slider-row">
+          <label>拉多長？</label>
+          <input type="range" id="spring-slider" min="0" max="80" value="0" oninput="pullSpring(this.value)">
+        </div>
+        <div class="result-text" id="spring-result">🎯 按下「放開」試試！</div>
+        <button onclick="releaseSpring()" style="margin-top:15px;padding:10px 25px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:20px;font-size:1rem;cursor:pointer;">放開！🚀</button>
       </div>
     </div>
-    <div class="slider-container">
-      <label>調整右邊重量：</label>
-      <input type="range" id="weight-slider" min="1" max="5" value="1" oninput="updateWeight(this.value)">
-      <p id="weight-info">右邊重量：1kg</p>
-    </div>
-    <div class="info-box">
-      <h3>💡 物理小知識</h3>
-      <p>槓桿原理：力量 × 距離 = 力量 × 距離！兩邊的「重量 × 位置」要相等才能平衡！</p>
-    </div>
   </div>
-</div>
 
-<!-- Shadow Modal -->
-<div class="modal" id="shadow-modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeGame('shadow')">✕</span>
-    <h2>🌑 影子變變變</h2>
-    <p>調整光源高度，觀察影子的變化！</p>
-    <div class="game-area">
-      <div class="shadow-container">
-        <div class="sun" id="sun"></div>
-        <div class="object"></div>
-        <div class="shadow-area" id="shadow-area"></div>
+  <!-- 翹翹板遊戲 -->
+  <div class="game-card" onclick="toggleCard('seesaw')">
+    <div class="card-header">
+      <div class="card-icon">⚖️</div>
+      <div class="card-title">
+        <h3>⚖️ 翹翹板平衡 - 學習槓桿</h3>
+        <span>調整重量，讓它平衡！</span>
+      </div>
+      <div class="card-arrow">▶</div>
+    </div>
+    <div class="card-content" id="seesaw-content">
+      <div class="info-section">
+        <h4>💡 物理小知識</h4>
+        <p>槓桿原理：「力量 × 距離 = 力量 × 距離」。<strong>重的物體放近支點</strong>，<strong>輕的物體放遠</strong>，這樣就能平衡了！</p>
+      </div>
+      <div class="play-section">
+        <h4>🎮 動手玩</h4>
+        <div class="seesaw-demo">
+          <div class="seesaw-base"></div>
+          <div class="seesaw-plank" id="seesaw-plank">
+            <div class="seesaw-ball left"></div>
+            <div class="seesaw-ball right"></div>
+          </div>
+          <div class="weight left" id="weight-left">1kg</div>
+          <div class="weight right" id="weight-right">1kg</div>
+        </div>
+        <div class="slider-row">
+          <label>右邊重量：</label>
+          <input type="range" id="weight-slider" min="1" max="5" value="1" oninput="adjustWeight(this.value)">
+        </div>
+        <div class="result-text" id="weight-result">⚖️ 平衡狀態</div>
       </div>
     </div>
-    <div class="slider-container">
-      <label>調整光源高度：</label>
-      <input type="range" id="sun-slider" min="10" max="150" value="30" oninput="updateShadow(this.value)">
-      <p id="shadow-info">光源高度：30px</p>
-    </div>
-    <div class="info-box">
-      <h3>💡 物理小知識</h3>
-      <p>光直進：光前進的路徑是直線！當光被物體擋住，就形成影子。光源越高，影子越短！</p>
-    </div>
   </div>
-</div>
 
-<!-- Reflection Modal -->
-<div class="modal" id="reflection-modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeGame('reflection')">✕</span>
-    <h2>🔦 光纖反射</h2>
-    <p>旋轉鏡子角度，讓光線射中目標！</p>
-    <div class="game-area">
-      <div class="reflection-container">
-        <div class="laser" id="laser"></div>
-        <div class="mirror" id="mirror"></div>
-        <div class="target"></div>
-        <div class="hit-effect" id="hit-effect"></div>
+  <!-- 影子遊戲 -->
+  <div class="game-card" onclick="toggleCard('shadow')">
+    <div class="card-header">
+      <div class="card-icon">🌑</div>
+      <div class="card-title">
+        <h3>🌑 影子變變變 - 認識光</h3>
+        <span>移動光源，觀察影子！</span>
+      </div>
+      <div class="card-arrow">▶</div>
+    </div>
+    <div class="card-content" id="shadow-content">
+      <div class="info-section">
+        <h4>💡 物理小知識</h4>
+        <p>光是<strong>直線前進</strong>的！當光碰到物體時，光前進的路被擋住，就會形成影子。<strong>光源越高</strong>，影子<strong>越短</strong>；光源越低，影子越長！</p>
+      </div>
+      <div class="play-section">
+        <h4>🎮 動手玩</h4>
+        <div class="shadow-demo">
+          <div class="shadow-sun" id="shadow-sun"></div>
+          <div class="shadow-stick"></div>
+          <div class="shadow-line" id="shadow-line"></div>
+          <div class="sun-angle-hint" id="shadow-hint">🌤️ 高度：30°</div>
+        </div>
+        <div class="slider-row">
+          <label>調整太陽高度：</label>
+          <input type="range" id="sun-slider" min="10" max="80" value="30" oninput="moveSun(this.value)">
+        </div>
+        <div class="result-text" id="shadow-result">🌗 影子長度：中</div>
       </div>
     </div>
-    <div class="slider-container">
-      <label>調整反射角：</label>
-      <input type="range" id="mirror-slider" min="-60" max="0" value="-30" oninput="updateMirror(this.value)">
-      <p id="mirror-info">反射角：30°</p>
+  </div>
+
+  <!-- 光反射遊戲 -->
+  <div class="game-card" onclick="toggleCard('reflection')">
+    <div class="card-header">
+      <div class="card-icon">🔦</div>
+      <div class="card-title">
+        <h3>🔦 光纖反射 - 認識反射</h3>
+        <span>調整角度，讓光射中目標！</span>
+      </div>
+      <div class="card-arrow">▶</div>
     </div>
-    <div class="info-box">
-      <h3>💡 物理小知識</h3>
-      <p>反射定律：入射角等於反射角！光線碰到鏡子時，入射角度等於反射角度，所以我們能看到物體！</p>
+    <div class="card-content" id="reflection-content">
+      <div class="info-section">
+        <h4>💡 物理小知識</h4>
+        <p>光碰到鏡子會<strong>反彈</strong>！這叫做「<strong>反射定律</strong>」：入射角等於反射角。光前進的角度等於離開的角度，所以我們能看到鏡子裡的自己！</p>
+      </div>
+      <div class="play-section">
+        <h4>🎮 動手玩</h4>
+        <div class="reflection-demo">
+          <div class="laser-source">💡</div>
+          <div class="laser-beam" id="laser-beam"></div>
+          <div class="mirror-stand"></div>
+          <div class="mirror-surface" id="mirror-surface"></div>
+          <div class="reflected-beam" id="reflected-beam"></div>
+          <div class="target-circle">🎯</div>
+          <div class="hit-star" id="hit-star">⭐</div>
+          <div class="angle-display" id="angle-display">入射角：30°</div>
+        </div>
+        <div class="slider-row">
+          <label>調整鏡子角度：</label>
+          <input type="range" id="mirror-slider" min="15" max="75" value="30" oninput="adjustMirror(this.value)">
+        </div>
+        <div class="result-text" id="reflection-result">🔍 調整角度讓光反彈到目標！</div>
+      </div>
     </div>
   </div>
+
 </div>
 
 <div class="footer">
-  <p>🔬 國小物理遊戲樂園 | 快樂學習，探索科學！</p>
+  <p>🔬 國小物理遊戲樂園 | 快樂學習，探索科學！🌟</p>
 </div>
 
 <script>
-function updateSpring(v) {
-  document.getElementById('spring-coil').style.height = (v*2)+'px';
-  document.getElementById('spring-ball').style.bottom = (-40-v*1.5)+'px';
-  document.getElementById('spring-info').textContent = '彈簧長度：'+(100+~~v)+'px';
+// 卡片展開
+function toggleCard(name) {
+  var content = document.getElementById(name + '-content');
+  var allContents = document.querySelectorAll('.card-content');
+  allContents.forEach(function(c) { c.classList.remove('active'); });
+  content.classList.add('active');
+  
+  // 初始化遊戲
+  if (name === 'spring') pullSpring(0);
+  if (name === 'seesaw') adjustWeight(1);
+  if (name === 'shadow') moveSun(30);
+  if (name === 'reflection') adjustMirror(30);
 }
-function updateWeight(v) {
-  var r=document.getElementById('weight-right');
-  r.textContent=v+'kg';
-  r.className='seesaw-weight right'+(v>2?' heavy':'');
-  var a=(v-1)*5;
-  document.getElementById('seesaw-plank').style.transform='translateX(-50%) rotate('+a+'deg)';
-  document.getElementById('weight-info').textContent='右邊重量：'+v+'kg';
+
+// 彈簧遊戲
+var springPulled = false;
+function pullSpring(val) {
+  var string = document.getElementById('spring-string');
+  var ball = document.getElementById('spring-ball');
+  var result = document.getElementById('spring-result');
+  
+  string.style.height = (30 + parseInt(val)) + 'px';
+  ball.style.bottom = (-parseInt(val)) + 'px';
+  
+  if (val > 50) {
+    result.textContent = '🔥 彈力超強！';
+  } else if (val > 20) {
+    result.textContent = '✨ 有彈力了！';
+  } else {
+    result.textContent = '🎯 按下「放開」試試！';
+  }
+  springPulled = val > 0;
 }
-function updateShadow(v) {
-  document.getElementById('sun').style.top=v+'px';
-  var h=20+(150-~~v)*0.3;
-  document.getElementById('shadow-area').style.height=h+'px';
-  document.getElementById('shadow-area').style.width=(100+(150-~~v)*0.5)+'px';
-  document.getElementById('shadow-info').textContent='光源高度：'+v+'px';
+
+function releaseSpring() {
+  if (!springPulled) {
+    alert('先拉動滑桿拉長彈簧！');
+    return;
+  }
+  var ball = document.getElementById('spring-ball');
+  ball.style.transition = 'bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+  ball.style.bottom = '0px';
+  
+  document.getElementById('spring-result').textContent = '🚀 彈回去了！';
+  
+  setTimeout(function() {
+    ball.style.transition = 'bottom 0.3s ease';
+    pullSpring(0);
+    document.getElementById('spring-slider').value = 0;
+  }, 800);
 }
-function updateMirror(v) {
-  var a=~~v;
-  document.getElementById('laser').style.transform='rotate('+(90+a)+'deg)';
-  document.getElementById('mirror').style.transform='rotate('+a+'deg)';
-  var e=document.getElementById('hit-effect');
-  if(a>=-45&&a<=-15){e.classList.add('active');document.getElementById('mirror-info').textContent='反射角：'+Math.abs(a)+'° ✨ 命中目標！';}
-  else{e.classList.remove('active');document.getElementById('mirror-info').textContent='反射角：'+Math.abs(a)+'°';}
+
+// 翹翹板遊戲
+function adjustWeight(val) {
+  var plank = document.getElementById('seesaw-plank');
+  var rightWeight = document.getElementById('weight-right');
+  var result = document.getElementById('weight-result');
+  
+  rightWeight.textContent = val + 'kg';
+  if (parseInt(val) > 2) {
+    rightWeight.classList.add('big');
+  } else {
+    rightWeight.classList.remove('big');
+  }
+  
+  var angle = (parseInt(val) - 1) * 8;
+  plank.style.transform = 'translateX(-50%) rotate(' + angle + 'deg)';
+  
+  if (val == 1) {
+    result.textContent = '⚖️ 平衡狀態！';
+  } else if (val < 3) {
+    result.textContent = '↘️ 微微右傾';
+  } else {
+    result.textContent = '↘️ 右邊太重了！';
+  }
 }
-function openGame(g){document.getElementById(g+'-modal').classList.add('active');if(g==='seesaw')updateWeight(1);if(g==='shadow')updateShadow(30);if(g==='reflection')updateMirror(-30);}
-function closeGame(g){document.getElementById(g+'-modal').classList.remove('active');}
-document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
+
+// 影子遊戲
+function moveSun(val) {
+  var sun = document.getElementById('shadow-sun');
+  var shadow = document.getElementById('shadow-line');
+  var hint = document.getElementById('shadow-hint');
+  var result = document.getElementById('shadow-result');
+  
+  var top = 90 - parseInt(val);
+  sun.style.top = top + 'px';
+  
+  var shadowLen = 80 - parseInt(val);
+  shadow.style.height = shadowLen + 'px';
+  shadow.style.width = (15 + (80 - parseInt(val)) * 0.3) + 'px';
+  
+  hint.textContent = '🌤️ 高度：' + val + '°';
+  
+  if (val > 60) {
+    result.textContent = '🌗 影子：短短的！';
+  } else if (val > 30) {
+    result.textContent = '🌒 影子：中等';
+  } else {
+    result.textContent = '🌑 影子：長長的！';
+  }
+}
+
+// 光反射遊戲
+function adjustMirror(val) {
+  var laser = document.getElementById('laser-beam');
+  var mirror = document.getElementById('mirror-surface');
+  var reflected = document.getElementById('reflected-beam');
+  var hitStar = document.getElementById('hit-star');
+  var angleDisplay = document.getElementById('angle-display');
+  var result = document.getElementById('reflection-result');
+  
+  var angle = parseInt(val);
+  laser.style.transform = 'rotate(' + angle + 'deg)';
+  
+  // 鏡子位置固定在 -30deg基礎上調整
+  var mirrorAngle = -30 + (angle - 30) * 0.5;
+  mirror.style.transform = 'rotate(' + mirrorAngle + 'deg)';
+  
+  // 反射光
+  var reflectAngle = 90 - (180 - angle - 30);
+  reflected.style.transform = 'rotate(' + reflectAngle + 'deg)';
+  
+  angleDisplay.textContent = '入射角：' + angle + '°';
+  
+  // 檢查是否命中目標
+  if (angle >= 40 && angle <= 55) {
+    reflected.classList.add('visible');
+    hitStar.classList.add('visible');
+    result.textContent = '⭐ 命中目標！';
+  } else {
+    reflected.classList.remove('visible');
+    hitStar.classList.remove('visible');
+    result.textContent = '🔍 再調整一下角度！';
+  }
+}
 </script>
+
 </body>
 </html>
