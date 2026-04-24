@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚖️ 翹翹板平衡大挑戰 - Matter.js</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #4ECDC4 0%, #26A69A 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 15px;
+}
+.header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+}
+.header p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+.game-container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+#game-canvas {
+  width: 100%;
+  display: block;
+}
+.controls {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  background: #f8f9fa;
+}
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B9D, #FFA07A);
+  color: white;
+}
+.btn-secondary {
+  background: #e0e0e0;
+  color: #555;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.status-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+.status-item {
+  text-align: center;
+}
+.status-item .value {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.status-item .label {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+.balance-indicator {
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+.balance-indicator.perfect {
+  background: #4ECDC4;
+  color: white;
+}
+.balance-indicator.tilted {
+  background: #FF6B9D;
+  color: white;
+}
+.instructions {
+  padding: 15px 20px;
+  background: #fff9e6;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  border-top: 1px solid #ffe0a0;
+}
+.instructions strong { color: #FF6B9D; }
+.showcase-info {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.showcase-info h2 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+.showcase-info p {
+  color: #666;
+  line-height: 1.6;
+}
+.tech-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: #667eea;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin: 5px 5px 5px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚖️ 翹翹板平衡大挑戰</h1>
+  <p>龍龍用 Matter.js 物理引擎自己寫的！🎮</p>
+</div>
+
+<div class="game-container">
+  <canvas id="game-canvas" width="700" height="350"></canvas>
+  
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="value" id="left-weight">1 kg</div>
+      <div class="label">左邊重量</div>
+    </div>
+    <div class="status-item">
+      <div class="value" id="tilt-angle">0°</div>
+      <div class="label">傾斜角度</div>
+    </div>
+    <div class="status-item">
+      <div class="value" id="right-weight">1 kg</div>
+      <div class="label">右邊重量</div>
+    </div>
+  </div>
+  
+  <div class="balance-indicator perfect" id="balance-indicator">⚖️ 完美平衡！</div>
+  
+  <div class="controls">
+    <button class="btn btn-primary" onclick="addLeftWeight()">➕ 左邊 +1kg</button>
+    <button class="btn btn-primary" onclick="removeLeftWeight()">➖ 左邊 -1kg</button>
+    <button class="btn btn-secondary" onclick="resetGame()">🔄 重置</button>
+    <button class="btn btn-primary" onclick="addRightWeight()">➕ 右邊 +1kg</button>
+    <button class="btn btn-primary" onclick="removeRightWeight()">➖ 右邊 -1kg</button>
+  </div>
+  
+  <div class="instructions">
+    <strong>🎮 玩法：</strong>
+    點擊按鈕調整兩邊重量，或拖動砝碼！當傾斜角度在 ±5° 內時，就達成「完美平衡」！
+  </div>
+</div>
+
+<div class="showcase-info">
+  <h2>🔧 龍龍的技術展示</h2>
+  <p>這是龍龍<b>自己用 Matter.js 物理引擎寫的</b>翹翹板遊戲！展現了：</p>
+  <p style="margin-top:10px;">
+    <span class="tech-tag">Matter.js 物理引擎</span>
+    <span class="tech-tag">真實物理模擬</span>
+    <span class="tech-tag">拖曳互動</span>
+    <span class="tech-tag">即時物理計算</span>
+    <span class="tech-tag">童趣視覺設計</span>
+  </p>
+  <p style="margin-top:10px;color:#888;font-size:0.9rem;">💡 龍龍今天學會了使用 Matter.js，以後可以用這個能力做更多物理互動遊戲！</p>
+</div>
+
+<script>
+const { Engine, Render, World, Bodies, Body, Composite, Constraint, Events, Mouse, MouseConstraint } = Matter;
+
+let engine, render, seesaw, leftWeight, rightWeight;
+let leftMass = 1, rightMass = 1;
+
+function init() {
+  engine = Engine.create();
+  world = engine.world;
+  engine.world.gravity.y = 1;
+
+  const canvas = document.getElementById('game-canvas');
+  
+  render = Render.create({
+    canvas: canvas,
+    engine: engine,
+    options: {
+      width: 700,
+      height: 350,
+      wireframes: false
+    }
+  });
+
+  const ground = Bodies.rectangle(350, 340, 700, 20, { isStatic: true, render: { fillStyle: '#8B7355' } });
+  const pivot = Bodies.polygon(350, 320, 3, 30, { isStatic: true, angle: Math.PI, render: { fillStyle: '#FF6B9D' } });
+  
+  seesaw = Bodies.rectangle(350, 270, 400, 15, {
+    chamfer: { radius: 7 },
+    render: { fillStyle: '#FFA07A' }
+  });
+
+  leftWeight = Bodies.circle(220, 220, 25, {
+    mass: leftMass,
+    chamfer: { radius: 5 },
+    render: { fillStyle: '#4ECDC4', strokeStyle: '#26A69A', lineWidth: 3 },
+    label: 'leftWeight'
+  });
+
+  rightWeight = Bodies.circle(480, 220, 25, {
+    mass: rightMass,
+    chamfer: { radius: 5 },
+    render: { fillStyle: '#FF6B9D', strokeStyle: '#e94560', lineWidth: 3 },
+    label: 'rightWeight'
+  });
+
+  const pivotConstraint = Constraint.create({
+    bodyA: seesaw, pointA: { x: 0, y: 0 },
+    pointB: { x: 350, y: 270 }, length: 0, stiffness: 1,
+    render: { visible: false }
+  });
+
+  const leftConstraint = Constraint.create({
+    bodyA: seesaw, pointA: { x: -130, y: 0 },
+    bodyB: leftWeight, pointB: { x: 0, y: 0 },
+    stiffness: 0.9, render: { strokeStyle: '#4ECDC4', lineWidth: 2 }
+  });
+
+  const rightConstraint = Constraint.create({
+    bodyA: seesaw, pointA: { x: 130, y: 0 },
+    bodyB: rightWeight, pointB: { x: 0, y: 0 },
+    stiffness: 0.9, render: { strokeStyle: '#FF6B9D', lineWidth: 2 }
+  });
+
+  World.add(world, [ground, pivot, seesaw, leftWeight, rightWeight, leftConstraint, rightConstraint, pivotConstraint]);
+
+  const mouse = Mouse.create(canvas);
+  const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: { stiffness: 0.2, render: { visible: false } }
+  });
+  World.add(world, mouseConstraint);
+
+  Render.run(render);
+  Engine.run(engine);
+  Events.on(engine, 'afterUpdate', updateStatus);
+  updateWeightDisplay();
+}
+
+function updateStatus() {
+  const angle = seesaw.angle * (180 / Math.PI);
+  document.getElementById('tilt-angle').textContent = angle.toFixed(1) + '°';
+  const indicator = document.getElementById('balance-indicator');
+  if (Math.abs(angle) <= 5) {
+    indicator.className = 'balance-indicator perfect';
+    indicator.textContent = '⚖️ 完美平衡！';
+  } else if (angle > 5) {
+    indicator.className = 'balance-indicator tilted';
+    indicator.textContent = '↘️ 右邊太重了！';
+  } else {
+    indicator.className = 'balance-indicator tilted';
+    indicator.textContent = '↙️ 左邊太重了！';
+  }
+}
+
+function updateWeightDisplay() {
+  document.getElementById('left-weight').textContent = leftMass + ' kg';
+  document.getElementById('right-weight').textContent = rightMass + ' kg';
+  Body.setMass(leftWeight, leftMass);
+  Body.setMass(rightWeight, rightMass);
+}
+
+function addLeftWeight() { if (leftMass < 10) { leftMass++; updateWeightDisplay(); } }
+function removeLeftWeight() { if (leftMass > 1) { leftMass--; updateWeightDisplay(); } }
+function addRightWeight() { if (rightMass < 10) { rightMass++; updateWeightDisplay(); } }
+function removeRightWeight() { if (rightMass > 1) { rightMass--; updateWeightDisplay(); } }
+
+function resetGame() {
+  leftMass = 1; rightMass = 1;
+  Body.setPosition(seesaw, { x: 350, y: 270 });
+  Body.setAngle(seesaw, 0);
+  Body.setVelocity(seesaw, { x: 0, y: 0 });
+  Body.setAngularVelocity(seesaw, 0);
+  Body.setPosition(leftWeight, { x: 220, y: 220 });
+  Body.setPosition(rightWeight, { x: 480, y: 220 });
+  Body.setMass(leftWeight, 1);
+  Body.setMass(rightWeight, 1);
+  updateWeightDisplay();
+}
+
+init();
+</script>
+
+</body>
+</html>
