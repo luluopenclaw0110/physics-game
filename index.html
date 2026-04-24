@@ -16,7 +16,7 @@ body {
 .header {
   text-align: center;
   color: white;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 .header h1 {
   font-size: 2.2rem;
@@ -30,61 +30,62 @@ body {
 }
 .game-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 25px;
-  max-width: 1200px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 .game-card {
   background: white;
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 .game-header {
-  background: linear-gradient(135deg, #FF6B9D, #FFA07A);
-  padding: 15px 20px;
+  padding: 12px 15px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
-.game-header.spring { background: linear-gradient(135deg, #FF6B9D, #FFA07A); }
-.game-header.pendulum { background: linear-gradient(135deg, #4ECDC4, #26A69A); }
-.game-header.optics { background: linear-gradient(135deg, #FFD93D, #FF9F43); }
-.game-header.wave { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
-.game-icon { font-size: 2rem; }
-.game-title { color: white; }
-.game-title h3 { font-size: 1.2rem; font-weight: 700; }
-.game-title p { font-size: 0.85rem; opacity: 0.9; }
+.game-header h3 {
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.game-header p {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.75rem;
+}
+.game-icon { font-size: 1.8rem; }
 .game-content {
-  padding: 15px;
+  padding: 10px;
 }
 .game-content iframe {
   width: 100%;
-  height: 420px;
+  height: 280px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #f5f5f5;
 }
 .game-desc {
-  margin-top: 12px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  padding: 10px 12px;
+  font-size: 0.8rem;
   color: #555;
-  line-height: 1.5;
+  line-height: 1.4;
+  background: #f8f9fa;
 }
-.game-desc strong { color: #667eea; }
 .footer {
   text-align: center;
   color: rgba(255,255,255,0.8);
   margin-top: 30px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+}
+@media (max-width: 900px) {
+  .game-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
   .game-grid { grid-template-columns: 1fr; }
-  .game-content iframe { height: 300px; }
+  .game-content iframe { height: 220px; }
 }
 </style>
 </head>
@@ -92,92 +93,151 @@ body {
 
 <div class="header">
   <h1>🧪 小小物理學家</h1>
-  <p>🎮 動手玩 PhET 專業互動模擬，快樂學物理！</p>
+  <p>🎮 9個 PhET 專業互動模擬，快樂學物理！</p>
 </div>
 
 <div class="game-grid">
 
-  <!-- 彈簧力學 -->
+  <!-- 1. 彈簧與質量 -->
   <div class="game-card">
-    <div class="game-header spring">
+    <div class="game-header" style="background:linear-gradient(135deg,#FF6B9D,#FFA07A);">
       <div class="game-icon">🔄</div>
-      <div class="game-title">
+      <div>
         <h3>彈簧與質量</h3>
-        <p>虎克定律、彈力位能</p>
+        <p>虎克定律・彈力位能</p>
       </div>
     </div>
     <div class="game-content">
-      <iframe src="https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_zh_TW.html" 
-              allowfullscreen>
-      </iframe>
+      <iframe src="https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_zh_TW.html" allowfullscreen></iframe>
     </div>
-    <div class="game-desc">
-      <strong>🎯 玩法：</strong>拖動質量球改變位置，觀察彈簧伸長和彈力變化！調整彈簧係數看看有什麼不同！
-    </div>
+    <div class="game-desc">🔧 拖動質量球，觀察彈簧伸長！調整係數試試！</div>
   </div>
 
-  <!-- 單擺 -->
+  <!-- 2. 單擺實驗 -->
   <div class="game-card">
-    <div class="game-header pendulum">
+    <div class="game-header" style="background:linear-gradient(135deg,#4ECDC4,#26A69A);">
       <div class="game-icon">⚖️</div>
-      <div class="game-title">
+      <div>
         <h3>單擺實驗</h3>
-        <p>週期運動、擺動頻率</p>
+        <p>週期運動・擺動頻率</p>
       </div>
     </div>
     <div class="game-content">
-      <iframe src="https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_zh_TW.html" 
-              allowfullscreen>
-      </iframe>
+      <iframe src="https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_zh_TW.html" allowfullscreen></iframe>
     </div>
-    <div class="game-desc">
-      <strong>🎯 玩法：</strong>拖動擺錘改變角度，調整繩子長度和質量，觀察週期變化！
-    </div>
+    <div class="game-desc">🔧 調整繩長和質量，觀察週期變化！</div>
   </div>
 
-  <!-- 光學折射 -->
+  <!-- 3. 光的折射 -->
   <div class="game-card">
-    <div class="game-header optics">
+    <div class="game-header" style="background:linear-gradient(135deg,#FFD93D,#FF9F43);">
       <div class="game-icon">🔦</div>
-      <div class="game-title">
+      <div>
         <h3>光的折射</h3>
-        <p>反射定律、折射角度</p>
+        <p>反射定律・折射角度</p>
       </div>
     </div>
     <div class="game-content">
-      <iframe src="https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_zh_TW.html" 
-              allowfullscreen>
-      </iframe>
+      <iframe src="https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_zh_TW.html" allowfullscreen></iframe>
     </div>
-    <div class="game-desc">
-      <strong>🎯 玩法：</strong>調整光源角度，觀察光線反射和折射的變化！試試不同介質！
-    </div>
+    <div class="game-desc">🔧 調整光源角度，觀察反射和折射！</div>
   </div>
 
-  <!-- 波動 -->
+  <!-- 4. 波動 -->
   <div class="game-card">
-    <div class="game-header wave">
+    <div class="game-header" style="background:linear-gradient(135deg,#A78BFA,#7C3AED);">
       <div class="game-icon">🌊</div>
-      <div class="game-title">
+      <div>
         <h3>波動入門</h3>
-        <p>波的性質、波長與頻率</p>
+        <p>波的性質・波長頻率</p>
       </div>
     </div>
     <div class="game-content">
-      <iframe src="https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_zh_TW.html" 
-              allowfullscreen>
-      </iframe>
+      <iframe src="https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_zh_TW.html" allowfullscreen></iframe>
     </div>
-    <div class="game-desc">
-      <strong>🎯 玩法：</strong>調整波源頻率和振幅，觀察波的干涉圖案！試著產生駐波！
+    <div class="game-desc">🔧 調整頻率和振幅，觀察干涉圖案！</div>
+  </div>
+
+  <!-- 5. 力與運動 -->
+  <div class="game-card">
+    <div class="game-header" style="background:linear-gradient(135deg,#60A5FA,#3B82F6);">
+      <div class="game-icon">🏃</div>
+      <div>
+        <h3>力與運動</h3>
+        <p>牛頓定律・加速度</p>
+      </div>
     </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/forces-and-motion-basics/latest/forces-and-motion-basics_zh_TW.html" allowfullscreen></iframe>
+    </div>
+    <div class="game-desc">🔧 推拉物體，觀察力和運動的關係！</div>
+  </div>
+
+  <!-- 6. 能量溜滑梯 -->
+  <div class="game-card">
+    <div class="game-header" style="background:linear-gradient(135deg,#34D399,#10B981);">
+      <div class="game-icon">🎢</div>
+      <div>
+        <h3>能量溜滑梯</h3>
+        <p>動能・位能・能量轉換</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/energy-skate-park/latest/energy-skate-park_zh_TW.html" allowfullscreen></iframe>
+    </div>
+    <div class="game-desc">🔧 溜下斜坡，觀察動能和位能轉換！</div>
+  </div>
+
+  <!-- 7. 認識電路 -->
+  <div class="game-card">
+    <div class="game-header" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);">
+      <div class="game-icon">⚡</div>
+      <div>
+        <h3>認識電路</h3>
+        <p>串聯・並聯・電流電壓</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_zh_TW.html" allowfullscreen></iframe>
+    </div>
+    <div class="game-desc">🔧 組裝電路，點亮燈泡！</div>
+  </div>
+
+  <!-- 8. 氣體動力論 -->
+  <div class="game-card">
+    <div class="game-header" style="background:linear-gradient(135deg,#F472B6,#EC4899);">
+      <div class="game-icon">💨</div>
+      <div>
+        <h3>氣體動力論</h3>
+        <p>溫度・壓力・分子運動</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_zh_TW.html" allowfullscreen></iframe>
+    </div>
+    <div class="game-desc">🔧 調整溫度和壓力，觀察分子運動！</div>
+  </div>
+
+  <!-- 9. 浮力 -->
+  <div class="game-card">
+    <div class="game-header" style="background:linear-gradient(135deg,#38BDF8,#0EA5E9);">
+      <div class="game-icon">🛁</div>
+      <div>
+        <h3>浮力</h3>
+        <p>阿基米德原理・密度</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/buoyancy/latest/buoyancy_zh_TW.html" allowfullscreen></iframe>
+    </div>
+    <div class="game-desc">🔧 放入物體，觀察浮力變化！</div>
   </div>
 
 </div>
 
 <div class="footer">
-  <p>🔬 使用 PhET 專業互動模擬 | <a href="https://phet.colorado.edu" style="color:white;">Visit PhET</a></p>
-  <p style="margin-top:8px;font-size:0.8rem;">PhET Interactive Simulations, University of Colorado Boulder</p>
+  <p>🔬 使用 PhET 專業互動模擬 | <a href="https://phet.colorado.edu" style="color:white;" target="_blank">Visit PhET</a></p>
+  <p style="margin-top:8px;font-size:0.75rem;">PhET Interactive Simulations, University of Colorado Boulder</p>
 </div>
 
 </body>
