@@ -1,1309 +1,184 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧪 小小物理學家 - 動手玩科學！</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .game-tabs {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255,255,255,0.3);
-            color: white;
-        }
-
-        .tab-btn:hover {
-            background: rgba(255,255,255,0.5);
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .game-container {
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .game-panel {
-            display: none;
-            padding: 30px;
-        }
-
-        .game-panel.active {
-            display: block;
-        }
-
-        .game-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #667eea;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .ctrl-btn {
-            width: 60px;
-            height: 60px;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .ctrl-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .ctrl-btn:active {
-            transform: scale(0.95);
-        }
-
-        .play-btn {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .pause-btn {
-            background: #FF9800;
-            color: white;
-        }
-
-        .reset-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .canvas-area {
-            background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 100%);
-            border-radius: 20px;
-            height: 350px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 4px solid #667eea;
-        }
-
-        .param-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .param-item {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 20px;
-            min-width: 200px;
-        }
-
-        .param-label {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .param-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #667eea;
-        }
-
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 15px;
-            border-radius: 10px;
-            background: #ddd;
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-
-        .feedback-panel {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            border-radius: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .feedback-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .feedback-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-        }
-
-        /* Game 1: Spring */
-        .spring-wall {
-            position: absolute;
-            left: 50px;
-            top: 50px;
-            width: 30px;
-            height: 250px;
-            background: linear-gradient(90deg, #888, #ccc, #888);
-            border-radius: 5px;
-        }
-
-        .spring-coil {
-            position: absolute;
-            left: 80px;
-            top: 50px;
-            width: 150px;
-            height: 20px;
-        }
-
-        .spring-mass {
-            position: absolute;
-            left: 200px;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #FF6B6B, #EE5A5A);
-            border-radius: 20px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            user-select: none;
-            transition: background 0.3s;
-        }
-
-        .spring-mass:active {
-            cursor: grabbing;
-        }
-
-        .spring-string {
-            position: absolute;
-            left: 80px;
-            top: 55px;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transform-origin: left center;
-        }
-
-        .ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            background: linear-gradient(to bottom, #8B4513, #654321);
-        }
-
-        .grass {
-            position: absolute;
-            bottom: 45px;
-            left: 0;
-            right: 0;
-            height: 20px;
-            background: #4CAF50;
-        }
-
-        /* Game 2: Seesaw */
-        .seesaw-base {
-            position: absolute;
-            left: 50%;
-            bottom: 50px;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 60px;
-            background: linear-gradient(135deg, #FF9800, #F57C00);
-            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-        }
-
-        .seesaw-plank {
-            position: absolute;
-            left: 50%;
-            bottom: 105px;
-            width: 500px;
-            height: 20px;
-            background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
-            border-radius: 10px;
-            transform-origin: center center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .seesaw-weight {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            border-radius: 20px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            user-select: none;
-            transition: transform 0.2s;
-        }
-
-        .seesaw-weight:active {
-            cursor: grabbing;
-        }
-
-        .seesaw-pivot {
-            position: absolute;
-            left: 50%;
-            bottom: 95px;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 30px;
-            background: #f44336;
-            border-radius: 50%;
-            z-index: 10;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-        }
-
-        /* Game 3: Shadow */
-        .sun {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #FFD700, #FFA500);
-            border-radius: 50%;
-            cursor: grab;
-            box-shadow: 0 0 60px #FFD700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-        }
-
-        .sun:active {
-            cursor: grabbing;
-        }
-
-        .stick-figure {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .stick-body {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 8px;
-            height: 80px;
-            background: #333;
-            border-radius: 4px;
-        }
-
-        .stick-head {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            background: #FFDAB9;
-            border-radius: 50%;
-            border: 3px solid #333;
-        }
-
-        .shadow-ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            background: linear-gradient(to bottom, #DEB887, #D2B48C);
-        }
-
-        .shadow-line {
-            position: absolute;
-            bottom: 50px;
-            height: 8px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 4px;
-            transform-origin: left bottom;
-        }
-
-        /* Game 4: Light Reflection */
-        .light-source {
-            position: absolute;
-            top: 50px;
-            left: 50px;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #fff, #ffeb3b);
-            border-radius: 50%;
-            box-shadow: 0 0 40px #ffeb3b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .mirror {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 20px;
-            background: linear-gradient(180deg, #E0E0E0, #BDBDBD);
-            border-radius: 10px;
-            cursor: grab;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .mirror:active {
-            cursor: grabbing;
-        }
-
-        .target {
-            position: absolute;
-            right: 50px;
-            bottom: 100px;
-            width: 60px;
-            height: 80px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .ray-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .angle-display {
-            position: absolute;
-            background: rgba(255,255,255,0.9);
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .challenge-banner {
-            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .game-panel {
-                padding: 15px;
-            }
-
-            .canvas-area {
-                height: 280px;
-            }
-
-            .param-item {
-                min-width: 150px;
-            }
-
-            .seesaw-plank {
-                width: 320px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧪 小小物理學家 - PhET 互動學習</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+.header p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.game-card {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.game-header {
+  background: linear-gradient(135deg, #FF6B9D, #FFA07A);
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.game-header.spring { background: linear-gradient(135deg, #FF6B9D, #FFA07A); }
+.game-header.pendulum { background: linear-gradient(135deg, #4ECDC4, #26A69A); }
+.game-header.optics { background: linear-gradient(135deg, #FFD93D, #FF9F43); }
+.game-header.wave { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
+.game-icon { font-size: 2rem; }
+.game-title { color: white; }
+.game-title h3 { font-size: 1.2rem; font-weight: 700; }
+.game-title p { font-size: 0.85rem; opacity: 0.9; }
+.game-content {
+  padding: 15px;
+}
+.game-content iframe {
+  width: 100%;
+  height: 420px;
+  border: none;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+.game-desc {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+}
+.game-desc strong { color: #667eea; }
+.footer {
+  text-align: center;
+  color: rgba(255,255,255,0.8);
+  margin-top: 30px;
+  font-size: 0.9rem;
+}
+@media (max-width: 600px) {
+  .game-grid { grid-template-columns: 1fr; }
+  .game-content iframe { height: 300px; }
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>🧪 小小物理學家</h1>
-        <p>動手玩科學，快樂學物理！✨</p>
+
+<div class="header">
+  <h1>🧪 小小物理學家</h1>
+  <p>🎮 動手玩 PhET 專業互動模擬，快樂學物理！</p>
+</div>
+
+<div class="game-grid">
+
+  <!-- 彈簧力學 -->
+  <div class="game-card">
+    <div class="game-header spring">
+      <div class="game-icon">🔄</div>
+      <div class="game-title">
+        <h3>彈簧與質量</h3>
+        <p>虎克定律、彈力位能</p>
+      </div>
     </div>
-
-    <div class="game-tabs">
-        <button class="tab-btn active" onclick="switchGame(1)">🔄 彈簧跳跳</button>
-        <button class="tab-btn" onclick="switchGame(2)">⚖️ 翹翹板平衡</button>
-        <button class="tab-btn" onclick="switchGame(3)">☀️ 影子變變變</button>
-        <button class="tab-btn" onclick="switchGame(4)">🔦 光纖反射</button>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_zh_TW.html" 
+              allowfullscreen>
+      </iframe>
     </div>
-
-    <div class="game-container">
-        <!-- Game 1: Spring -->
-        <div class="game-panel active" id="game1">
-            <div class="game-title">🔄 彈簧跳跳</div>
-            <div class="challenge-banner">🎯 挑戰：拖動質量球，觀察彈簧振盪！</div>
-            
-            <div class="controls">
-                <button class="ctrl-btn play-btn" onclick="game1.play()">▶️</button>
-                <button class="ctrl-btn pause-btn" onclick="game1.pause()">⏸️</button>
-                <button class="ctrl-btn reset-btn" onclick="game1.reset()">🔄</button>
-            </div>
-
-            <div class="canvas-area" id="springArea">
-                <div class="spring-wall"></div>
-                <div class="spring-string" id="springString"></div>
-                <div class="spring-mass" id="springMass">🏋️</div>
-                <div class="grass"></div>
-                <div class="ground"></div>
-            </div>
-
-            <div class="param-panel">
-                <div class="param-item">
-                    <div class="param-label">⚖️ 質量 (kg)</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="massSlider" min="1" max="10" value="3">
-                        <span class="param-value" id="massValue">3</span>
-                    </div>
-                </div>
-                <div class="param-item">
-                    <div class="param-label">🔩 彈簧係數 (N/m)</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="kSlider" min="1" max="20" value="8">
-                        <span class="param-value" id="kValue">8</span>
-                    </div>
-                </div>
-                <div class="param-item">
-                    <div class="param-label">🍃 阻尼</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="dampingSlider" min="0" max="5" value="0.5" step="0.1">
-                        <span class="param-value" id="dampingValue">0.5</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feedback-panel">
-                <div class="feedback-title">即時彈力</div>
-                <div class="feedback-value" id="springForce">0.0 N</div>
-            </div>
-        </div>
-
-        <!-- Game 2: Seesaw -->
-        <div class="game-panel" id="game2">
-            <div class="game-title">⚖️ 翹翹板平衡</div>
-            <div class="challenge-banner">🎯 挑戰：調整兩邊重量，讓翹翹板水平平衡！</div>
-            
-            <div class="controls">
-                <button class="ctrl-btn play-btn" onclick="game2.play()">▶️</button>
-                <button class="ctrl-btn pause-btn" onclick="game2.pause()">⏸️</button>
-                <button class="ctrl-btn reset-btn" onclick="game2.reset()">🔄</button>
-            </div>
-
-            <div class="canvas-area" id="seesawArea">
-                <div class="seesaw-pivot"></div>
-                <div class="seesaw-plank" id="seesawPlank">
-                    <div class="seesaw-weight" id="weightLeft" style="background: linear-gradient(135deg, #E91E63, #C2185B); left: -35px; top: -60px;">5</div>
-                    <div class="seesaw-weight" id="weightRight" style="background: linear-gradient(135deg, #2196F3, #1976D2); right: -35px; top: -60px;">3</div>
-                </div>
-                <div class="grass"></div>
-                <div class="ground"></div>
-            </div>
-
-            <div class="param-panel">
-                <div class="param-item">
-                    <div class="param-label">🔴 左邊重量</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="leftWeightSlider" min="1" max="10" value="5">
-                        <span class="param-value" id="leftWeightValue">5</span>
-                    </div>
-                </div>
-                <div class="param-item">
-                    <div class="param-label">🔵 右邊重量</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="rightWeightSlider" min="1" max="10" value="3">
-                        <span class="param-value" id="rightWeightValue">3</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feedback-panel">
-                <div class="feedback-title">傾斜角度</div>
-                <div class="feedback-value" id="seesawAngle">0.0°</div>
-            </div>
-        </div>
-
-        <!-- Game 3: Shadow -->
-        <div class="game-panel" id="game3">
-            <div class="game-title">☀️ 影子變變變</div>
-            <div class="challenge-banner">🎯 挑戰：移動太陽，改變影子長度！</div>
-            
-            <div class="controls">
-                <button class="ctrl-btn play-btn" onclick="game3.play()">▶️</button>
-                <button class="ctrl-btn pause-btn" onclick="game3.pause()">⏸️</button>
-                <button class="ctrl-btn reset-btn" onclick="game3.reset()">🔄</button>
-            </div>
-
-            <div class="canvas-area" id="shadowArea">
-                <div class="sun" id="sun">☀️</div>
-                <div class="stick-figure">
-                    <div class="stick-head"></div>
-                    <div class="stick-body"></div>
-                </div>
-                <div class="shadow-line" id="shadowLine"></div>
-                <div class="shadow-ground"></div>
-            </div>
-
-            <div class="param-panel">
-                <div class="param-item">
-                    <div class="param-label">🧍 人物高度 (cm)</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="heightSlider" min="50" max="180" value="120">
-                        <span class="param-value" id="heightValue">120</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feedback-panel">
-                <div class="feedback-title">影子長度</div>
-                <div class="feedback-value" id="shadowLength">80 cm</div>
-            </div>
-        </div>
-
-        <!-- Game 4: Light Reflection -->
-        <div class="game-panel" id="game4">
-            <div class="game-title">🔦 光纖反射</div>
-            <div class="challenge-banner">🎯 挑戰：旋轉鏡子，讓光線射中目標靶心！</div>
-            
-            <div class="controls">
-                <button class="ctrl-btn play-btn" onclick="game4.play()">▶️</button>
-                <button class="ctrl-btn pause-btn" onclick="game4.pause()">⏸️</button>
-                <button class="ctrl-btn reset-btn" onclick="game4.reset()">🔄</button>
-            </div>
-
-            <div class="canvas-area" id="lightArea">
-                <canvas class="ray-canvas" id="lightCanvas"></canvas>
-                <div class="light-source">💡</div>
-                <div class="mirror" id="mirror">🪞</div>
-                <div class="target" id="target">🎯</div>
-                <div class="angle-display" id="incidenceAngle">入射角: 45°</div>
-                <div class="angle-display" id="reflectionAngle">反射角: 45°</div>
-            </div>
-
-            <div class="param-panel">
-                <div class="param-item">
-                    <div class="param-label">🔄 鏡子角度</div>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="mirrorAngleSlider" min="0" max="90" value="45">
-                        <span class="param-value" id="mirrorAngleValue">45°</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feedback-panel">
-                <div class="feedback-title">命中狀態</div>
-                <div class="feedback-value" id="hitStatus">未命中 ❌</div>
-            </div>
-        </div>
+    <div class="game-desc">
+      <strong>🎯 玩法：</strong>拖動質量球改變位置，觀察彈簧伸長和彈力變化！調整彈簧係數看看有什麼不同！
     </div>
+  </div>
+
+  <!-- 單擺 -->
+  <div class="game-card">
+    <div class="game-header pendulum">
+      <div class="game-icon">⚖️</div>
+      <div class="game-title">
+        <h3>單擺實驗</h3>
+        <p>週期運動、擺動頻率</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_zh_TW.html" 
+              allowfullscreen>
+      </iframe>
+    </div>
+    <div class="game-desc">
+      <strong>🎯 玩法：</strong>拖動擺錘改變角度，調整繩子長度和質量，觀察週期變化！
+    </div>
+  </div>
+
+  <!-- 光學折射 -->
+  <div class="game-card">
+    <div class="game-header optics">
+      <div class="game-icon">🔦</div>
+      <div class="game-title">
+        <h3>光的折射</h3>
+        <p>反射定律、折射角度</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_zh_TW.html" 
+              allowfullscreen>
+      </iframe>
+    </div>
+    <div class="game-desc">
+      <strong>🎯 玩法：</strong>調整光源角度，觀察光線反射和折射的變化！試試不同介質！
+    </div>
+  </div>
+
+  <!-- 波動 -->
+  <div class="game-card">
+    <div class="game-header wave">
+      <div class="game-icon">🌊</div>
+      <div class="game-title">
+        <h3>波動入門</h3>
+        <p>波的性質、波長與頻率</p>
+      </div>
+    </div>
+    <div class="game-content">
+      <iframe src="https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_zh_TW.html" 
+              allowfullscreen>
+      </iframe>
+    </div>
+    <div class="game-desc">
+      <strong>🎯 玩法：</strong>調整波源頻率和振幅，觀察波的干涉圖案！試著產生駐波！
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>🔬 使用 PhET 專業互動模擬 | <a href="https://phet.colorado.edu" style="color:white;">Visit PhET</a></p>
+  <p style="margin-top:8px;font-size:0.8rem;">PhET Interactive Simulations, University of Colorado Boulder</p>
+</div>
 
-    <script>
-        // Game 1: Spring Physics
-        const game1 = {
-            isRunning: false,
-            position: 150,
-            velocity: 0,
-            mass: 3,
-            k: 8,
-            damping: 0.5,
-            equilibrium: 150,
-            animId: null,
-
-            init() {
-                this.massEl = document.getElementById('springMass');
-                this.stringEl = document.getElementById('springString');
-                this.forceEl = document.getElementById('springForce');
-
-                this.massEl.addEventListener('mousedown', (e) => this.startDrag(e));
-                this.massEl.addEventListener('touchstart', (e) => this.startDrag(e));
-
-                document.getElementById('massSlider').addEventListener('input', (e) => {
-                    this.mass = parseFloat(e.target.value);
-                    document.getElementById('massValue').textContent = this.mass;
-                });
-
-                document.getElementById('kSlider').addEventListener('input', (e) => {
-                    this.k = parseFloat(e.target.value);
-                    document.getElementById('kValue').textContent = this.k;
-                });
-
-                document.getElementById('dampingSlider').addEventListener('input', (e) => {
-                    this.damping = parseFloat(e.target.value);
-                    document.getElementById('dampingValue').textContent = this.damping;
-                });
-
-                this.updateDisplay();
-            },
-
-            startDrag(e) {
-                e.preventDefault();
-                this.pause();
-                const moveHandler = (e) => {
-                    const rect = document.getElementById('springArea').getBoundingClientRect();
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    let newPos = clientX - rect.left - 100;
-                    newPos = Math.max(80, Math.min(280, newPos));
-                    this.position = newPos;
-                    this.velocity = 0;
-                    this.updateDisplay();
-                };
-                const upHandler = () => {
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('touchend', upHandler);
-                };
-                document.addEventListener('mousemove', moveHandler);
-                document.addEventListener('mouseup', upHandler);
-                document.addEventListener('touchmove', moveHandler);
-                document.addEventListener('touchend', upHandler);
-            },
-
-            play() {
-                if (this.isRunning) return;
-                this.isRunning = true;
-                this.lastTime = performance.now();
-                this.animate();
-            },
-
-            pause() {
-                this.isRunning = false;
-                if (this.animId) {
-                    cancelAnimationFrame(this.animId);
-                    this.animId = null;
-                }
-            },
-
-            reset() {
-                this.pause();
-                this.position = this.equilibrium;
-                this.velocity = 0;
-                this.updateDisplay();
-            },
-
-            animate() {
-                if (!this.isRunning) return;
-                const now = performance.now();
-                const dt = (now - this.lastTime) / 1000;
-                this.lastTime = now;
-
-                // Spring physics: F = -kx - bv
-                const displacement = this.position - this.equilibrium;
-                const springForce = -this.k * displacement;
-                const dampingForce = -this.damping * this.velocity;
-                const acceleration = (springForce + dampingForce) / this.mass;
-
-                this.velocity += acceleration * dt;
-                this.position += this.velocity * dt;
-
-                // Boundaries
-                if (this.position < 80) {
-                    this.position = 80;
-                    this.velocity *= -0.7;
-                } else if (this.position > 280) {
-                    this.position = 280;
-                    this.velocity *= -0.7;
-                }
-
-                this.updateDisplay();
-                this.animId = requestAnimationFrame(() => this.animate());
-            },
-
-            updateDisplay() {
-                this.massEl.style.left = this.position + 'px';
-                const stretch = this.position - 80;
-                const force = this.k * Math.abs(stretch) / 10;
-                this.forceEl.textContent = force.toFixed(1) + ' N';
-
-                // Update spring visual
-                const springSegments = 12;
-                const amplitude = 8 + (this.position - 150) * 0.05;
-                let svg = '';
-                for (let i = 0; i < springSegments; i++) {
-                    const x = i * 10;
-                    const y = 10 + (i % 2 === 0 ? -amplitude : amplitude);
-                    svg += `<line x1="${x}" y1="10" x2="${x + 5}" y2="${y}" stroke="#667eea" stroke-width="4" stroke-linecap="round"/>`;
-                }
-                this.stringEl.style.width = (this.position - 80) + 'px';
-
-                // Color feedback
-                if (force > 15) {
-                    this.forceEl.style.color = '#f44336';
-                } else if (force > 8) {
-                    this.forceEl.style.color = '#FF9800';
-                } else {
-                    this.forceEl.style.color = 'white';
-                }
-            }
-        };
-
-        // Game 2: Seesaw Physics
-        const game2 = {
-            isRunning: false,
-            angle: 0,
-            angularVelocity: 0,
-            leftWeight: 5,
-            rightWeight: 3,
-            plankLength: 250,
-            animId: null,
-            isDragging: null,
-            dragOffset: 0,
-
-            init() {
-                this.plankEl = document.getElementById('seesawPlank');
-                this.weightLeftEl = document.getElementById('weightLeft');
-                this.weightRightEl = document.getElementById('weightRight');
-                this.angleEl = document.getElementById('seesawAngle');
-
-                this.weightLeftEl.addEventListener('mousedown', (e) => this.startDrag(e, 'left'));
-                this.weightLeftEl.addEventListener('touchstart', (e) => this.startDrag(e, 'left'));
-                this.weightRightEl.addEventListener('mousedown', (e) => this.startDrag(e, 'right'));
-                this.weightRightEl.addEventListener('touchstart', (e) => this.startDrag(e, 'right'));
-
-                document.getElementById('leftWeightSlider').addEventListener('input', (e) => {
-                    this.leftWeight = parseFloat(e.target.value);
-                    document.getElementById('leftWeightValue').textContent = this.leftWeight;
-                    this.weightLeftEl.textContent = this.leftWeight;
-                    this.updateTorque();
-                });
-
-                document.getElementById('rightWeightSlider').addEventListener('input', (e) => {
-                    this.rightWeight = parseFloat(e.target.value);
-                    document.getElementById('rightWeightValue').textContent = this.rightWeight;
-                    this.weightRightEl.textContent = this.rightWeight;
-                    this.updateTorque();
-                });
-
-                this.updateTorque();
-            },
-
-            startDrag(e, side) {
-                e.preventDefault();
-                this.pause();
-                this.isDragging = side;
-                const moveHandler = (e) => {
-                    const rect = this.plankEl.getBoundingClientRect();
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const relativeX = clientX - rect.left - rect.width / 2;
-                    if (side === 'left') {
-                        const newPos = Math.max(-230, Math.min(-30, relativeX - 35));
-                        this.weightLeftEl.style.left = newPos + 'px';
-                    } else {
-                        const newPos = Math.max(30, Math.min(230, relativeX + 35));
-                        this.weightRightEl.style.right = (-newPos) + 'px';
-                    }
-                    this.updateTorque();
-                };
-                const upHandler = () => {
-                    this.isDragging = null;
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('touchend', upHandler);
-                };
-                document.addEventListener('mousemove', moveHandler);
-                document.addEventListener('mouseup', upHandler);
-                document.addEventListener('touchmove', moveHandler);
-                document.addEventListener('touchend', upHandler);
-            },
-
-            updateTorque() {
-                const leftX = parseFloat(this.weightLeftEl.style.left) + 35;
-                const rightX = -parseFloat(this.weightRightEl.style.right) - 35;
-                const torque = this.leftWeight * leftX - this.rightWeight * rightX;
-                this.targetAngle = torque * 0.1;
-                this.updateDisplay();
-            },
-
-            play() {
-                if (this.isRunning) return;
-                this.isRunning = true;
-                this.lastTime = performance.now();
-                this.animate();
-            },
-
-            pause() {
-                this.isRunning = false;
-                if (this.animId) {
-                    cancelAnimationFrame(this.animId);
-                    this.animId = null;
-                }
-            },
-
-            reset() {
-                this.pause();
-                this.angle = 0;
-                this.angularVelocity = 0;
-                this.plankEl.style.transform = 'translateX(-50%) rotate(0deg)';
-                this.angleEl.textContent = '0.0°';
-            },
-
-            animate() {
-                if (!this.isRunning) return;
-                const now = performance.now();
-                const dt = (now - this.lastTime) / 1000;
-                this.lastTime = now;
-
-                // Angular acceleration from torque
-                const leftX = parseFloat(this.weightLeftEl.style.left) + 35;
-                const rightX = -parseFloat(this.weightRightEl.style.right) - 35;
-                const torque = this.leftWeight * leftX - this.rightWeight * rightX;
-                const momentOfInertia = this.leftWeight * leftX * leftX + this.rightWeight * rightX * rightX + 500;
-                const angularAcceleration = torque / momentOfInertia * 50;
-
-                this.angularVelocity += angularAcceleration * dt;
-                this.angularVelocity *= 0.98; // Damping
-                this.angle += this.angularVelocity * dt;
-
-                // Limits
-                this.angle = Math.max(-30, Math.min(30, this.angle));
-
-                this.updateDisplay();
-                this.animId = requestAnimationFrame(() => this.animate());
-            },
-
-            updateDisplay() {
-                this.plankEl.style.transform = `translateX(-50%) rotate(${this.angle.toFixed(1)}deg)`;
-                this.angleEl.textContent = this.angle.toFixed(1) + '°';
-
-                if (Math.abs(this.angle) < 2) {
-                    this.angleEl.style.color = '#4CAF50';
-                } else if (Math.abs(this.angle) < 10) {
-                    this.angleEl.style.color = '#FF9800';
-                } else {
-                    this.angleEl.style.color = 'white';
-                }
-            }
-        };
-
-        // Game 3: Shadow
-        const game3 = {
-            isRunning: false,
-            sunY: 50,
-            height: 120,
-            animId: null,
-
-            init() {
-                this.sunEl = document.getElementById('sun');
-                this.shadowEl = document.getElementById('shadowLine');
-                this.shadowLenEl = document.getElementById('shadowLength');
-                this.areaEl = document.getElementById('shadowArea');
-
-                this.sunEl.addEventListener('mousedown', (e) => this.startDrag(e));
-                this.sunEl.addEventListener('touchstart', (e) => this.startDrag(e));
-
-                document.getElementById('heightSlider').addEventListener('input', (e) => {
-                    this.height = parseFloat(e.target.value);
-                    document.getElementById('heightValue').textContent = this.height;
-                    this.updateDisplay();
-                });
-
-                this.updateDisplay();
-            },
-
-            startDrag(e) {
-                e.preventDefault();
-                this.pause();
-                const moveHandler = (e) => {
-                    const rect = this.areaEl.getBoundingClientRect();
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    this.sunY = Math.max(30, Math.min(rect.height - 130, clientY - rect.top));
-                    this.updateDisplay();
-                };
-                const upHandler = () => {
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('touchend', upHandler);
-                };
-                document.addEventListener('mousemove', moveHandler);
-                document.addEventListener('mouseup', upHandler);
-                document.addEventListener('touchmove', moveHandler);
-                document.addEventListener('touchend', upHandler);
-            },
-
-            play() {
-                this.isRunning = true;
-                const animate = () => {
-                    if (!this.isRunning) return;
-                    this.sunY += 0.5;
-                    if (this.sunY > 250) this.sunY = 30;
-                    this.updateDisplay();
-                    this.animId = requestAnimationFrame(animate);
-                };
-                animate();
-            },
-
-            pause() {
-                this.isRunning = false;
-            },
-
-            reset() {
-                this.pause();
-                this.sunY = 50;
-                this.updateDisplay();
-            },
-
-            updateDisplay() {
-                this.sunEl.style.top = this.sunY + 'px';
-                this.sunEl.style.left = '50px';
-
-                const areaHeight = 300;
-                const sunCenterY = this.sunY + 40;
-                const figureHeight = this.height * 0.6;
-                const groundY = areaHeight - 50;
-
-                // Shadow calculation using similar triangles
-                const sunAngle = Math.atan2(groundY - sunCenterY, 300);
-                const shadowLength = figureHeight * Math.cos(sunAngle) / Math.sin(sunAngle);
-
-                this.shadowEl.style.left = 'calc(50% + 20px)';
-                this.shadowEl.style.width = Math.min(300, Math.max(20, shadowLength)) + 'px';
-                this.shadowEl.style.transform = `rotate(${(-sunAngle * 180 / Math.PI + 90).toFixed(1)}deg)`;
-
-                this.shadowLenEl.textContent = Math.round(shadowLength) + ' cm';
-
-                // Color feedback based on shadow length
-                if (shadowLength < 50) {
-                    this.shadowLenEl.style.color = '#FFD700'; // Short shadow = high sun
-                } else if (shadowLength < 150) {
-                    this.shadowLenEl.style.color = 'white';
-                } else {
-                    this.shadowLenEl.style.color = '#87CEEB'; // Long shadow = low sun
-                }
-            }
-        };
-
-        // Game 4: Light Reflection
-        const game4 = {
-            isRunning: false,
-            mirrorAngle: 45,
-            animId: null,
-
-            init() {
-                this.canvas = document.getElementById('lightCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.mirrorEl = document.getElementById('mirror');
-                this.targetEl = document.getElementById('target');
-                this.incidenceEl = document.getElementById('incidenceAngle');
-                this.reflectionEl = document.getElementById('reflectionAngle');
-                this.hitEl = document.getElementById('hitStatus');
-                this.areaEl = document.getElementById('lightArea');
-
-                this.mirrorEl.addEventListener('mousedown', (e) => this.startDrag(e));
-                this.mirrorEl.addEventListener('touchstart', (e) => this.startDrag(e));
-
-                document.getElementById('mirrorAngleSlider').addEventListener('input', (e) => {
-                    this.mirrorAngle = parseFloat(e.target.value);
-                    document.getElementById('mirrorAngleValue').textContent = this.mirrorAngle + '°';
-                    this.updateDisplay();
-                });
-
-                this.resizeCanvas();
-                window.addEventListener('resize', () => this.resizeCanvas());
-                this.updateDisplay();
-            },
-
-            resizeCanvas() {
-                const rect = this.areaEl.getBoundingClientRect();
-                this.canvas.width = rect.width;
-                this.canvas.height = rect.height;
-                this.updateDisplay();
-            },
-
-            startDrag(e) {
-                e.preventDefault();
-                this.pause();
-                const moveHandler = (e) => {
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const rect = this.areaEl.getBoundingClientRect();
-                    const relativeX = (clientX - rect.left) / rect.width;
-                    this.mirrorAngle = relativeX * 90;
-                    document.getElementById('mirrorAngleSlider').value = this.mirrorAngle;
-                    document.getElementById('mirrorAngleValue').textContent = Math.round(this.mirrorAngle) + '°';
-                    this.updateDisplay();
-                };
-                const upHandler = () => {
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('touchend', upHandler);
-                };
-                document.addEventListener('mousemove', moveHandler);
-                document.addEventListener('mouseup', upHandler);
-                document.addEventListener('touchmove', moveHandler);
-                document.addEventListener('touchend', upHandler);
-            },
-
-            play() {
-                this.isRunning = true;
-            },
-
-            pause() {
-                this.isRunning = false;
-            },
-
-            reset() {
-                this.pause();
-                this.mirrorAngle = 45;
-                document.getElementById('mirrorAngleSlider').value = 45;
-                document.getElementById('mirrorAngleValue').textContent = '45°';
-                this.updateDisplay();
-            },
-
-            updateDisplay() {
-                const w = this.canvas.width;
-                const h = this.canvas.height;
-
-                // Light source position
-                const lightX = 75;
-                const lightY = 75;
-
-                // Mirror position
-                const mirrorX = w * 0.5;
-                const mirrorY = h - 100;
-
-                // Mirror rotation
-                const mirrorRad = this.mirrorAngle * Math.PI / 180;
-                const mirrorLength = 75;
-                const mirrorStartX = mirrorX - Math.cos(mirrorRad) * mirrorLength;
-                const mirrorStartY = mirrorY - Math.sin(mirrorRad) * mirrorLength;
-                const mirrorEndX = mirrorX + Math.cos(mirrorRad) * mirrorLength;
-                const mirrorEndY = mirrorY + Math.sin(mirrorRad) * mirrorLength;
-
-                // Light ray direction
-                const rayAngle = Math.PI / 4; // 45 degrees down-right
-                const rayLength = 600;
-                const rayEndX = lightX + Math.cos(rayAngle) * rayLength;
-                const rayEndY = lightY + Math.sin(rayAngle) * rayLength;
-
-                // Find intersection with mirror
-                const intersection = this.lineIntersection(
-                    lightX, lightY, rayEndX, rayEndY,
-                    mirrorStartX, mirrorStartY, mirrorEndX, mirrorEndY
-                );
-
-                // Calculate incidence and reflection angles
-                const normalAngle = mirrorRad + Math.PI / 2;
-                const incidenceAngle = this.angleBetween(rayAngle, normalAngle);
-                const reflectionAngle = incidenceAngle;
-
-                // Reflection ray direction
-                const reflectionAngle2 = mirrorRad - Math.PI / 4;
-                const reflectionEndX = intersection ? intersection.x + Math.cos(reflectionAngle2) * 400 : rayEndX;
-                const reflectionEndY = intersection ? intersection.y + Math.sin(reflectionAngle2) * 400 : rayEndY;
-
-                // Target position
-                const targetX = w - 80;
-                const targetY = h - 140;
-                const targetWidth = 60;
-                const targetHeight = 80;
-
-                // Check if reflection hits target
-                let hitsTarget = false;
-                if (intersection) {
-                    const t = (targetX - intersection.x) / (reflectionEndX - intersection.x);
-                    if (t > 0 && t < 1) {
-                        const hitY = intersection.y + t * (reflectionEndY - intersection.y);
-                        if (hitY > targetY - targetHeight/2 && hitY < targetY + targetHeight/2) {
-                            hitsTarget = true;
-                        }
-                    }
-                }
-
-                // Clear and draw
-                this.ctx.clearRect(0, 0, w, h);
-
-                // Draw light ray
-                this.ctx.beginPath();
-                this.ctx.moveTo(lightX, lightY);
-                if (intersection) {
-                    this.ctx.lineTo(intersection.x, intersection.y);
-                } else {
-                    this.ctx.lineTo(rayEndX, rayEndY);
-                }
-                this.ctx.strokeStyle = '#FFEB3B';
-                this.ctx.lineWidth = 4;
-                this.ctx.shadowColor = '#FFEB3B';
-                this.ctx.shadowBlur = 15;
-                this.ctx.stroke();
-
-                // Draw reflection ray
-                if (intersection) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(intersection.x, intersection.y);
-                    this.ctx.lineTo(reflectionEndX, reflectionEndY);
-                    this.ctx.strokeStyle = '#FF9800';
-                    this.ctx.shadowColor = '#FF9800';
-                    this.ctx.stroke();
-                }
-
-                this.ctx.shadowBlur = 0;
-
-                // Update angle displays
-                const displayAngle = Math.abs(90 - this.mirrorAngle);
-                this.incidenceEl.textContent = `入射角: ${displayAngle.toFixed(0)}°`;
-                this.reflectionEl.textContent = `反射角: ${displayAngle.toFixed(0)}°`;
-                this.incidenceEl.style.left = (mirrorX - 80) + 'px';
-                this.incidenceEl.style.top = (mirrorY - 60) + 'px';
-                this.reflectionEl.style.left = (mirrorX + 20) + 'px';
-                this.reflectionEl.style.top = (mirrorY - 60) + 'px';
-
-                // Update hit status
-                if (hitsTarget) {
-                    this.hitEl.textContent = '命中！🎯';
-                    this.hitEl.style.color = '#4CAF50';
-                } else {
-                    this.hitEl.textContent = '未命中 ❌';
-                    this.hitEl.style.color = 'white';
-                }
-
-                // Update mirror visual
-                this.mirrorEl.style.left = mirrorX + 'px';
-                this.mirrorEl.style.bottom = '100px';
-                this.mirrorEl.style.transform = `translateX(-50%) rotate(${-this.mirrorAngle}deg)`;
-            },
-
-            lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
-                const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-                if (Math.abs(denom) < 0.001) return null;
-
-                const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-                const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
-
-                if (t > 0 && t < 1 && u > 0 && u < 1) {
-                    return {
-                        x: x1 + t * (x2 - x1),
-                        y: y1 + t * (y2 - y1)
-                    };
-                }
-                return null;
-            },
-
-            angleBetween(a1, a2) {
-                let diff = a1 - a2;
-                while (diff < -Math.PI) diff += 2 * Math.PI;
-                while (diff > Math.PI) diff -= 2 * Math.PI;
-                return diff;
-            }
-        };
-
-        // Game switching
-        function switchGame(num) {
-            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('game' + num).classList.add('active');
-            document.querySelectorAll('.tab-btn')[num - 1].classList.add('active');
-        }
-
-        // Initialize all games
-        window.addEventListener('load', () => {
-            game1.init();
-            game2.init();
-            game3.init();
-            game4.init();
-        });
-    </script>
 </body>
 </html>
