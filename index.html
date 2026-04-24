@@ -1,1367 +1,1309 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小小物理學家 🌟 互動學習網站</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --pink: #FF6B9D;
-      --yellow: #FFD93D;
-      --blue: #6BCB77;
-      --green: #4D96FF;
-      --orange: #FF8C42;
-      --purple: #C77DFF;
-      --bg: #FFF8F0;
-      --card-bg: #FFFFFF;
-      --shadow: 0 8px 32px rgba(0,0,0,0.1);
-      --shadow-hover: 0 12px 40px rgba(0,0,0,0.15);
-      --radius: 24px;
-      --radius-sm: 16px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background: var(--bg);
-      color: #333;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ===== HEADER ===== */
-    .header {
-      background: linear-gradient(135deg, var(--pink), var(--orange));
-      padding: 40px 20px;
-      text-align: center;
-      border-radius: 0 0 40px 40px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header::before {
-      content: '⭐🌙✨🌈⭐🌙✨🌈';
-      position: absolute;
-      top: 10px;
-      left: 0;
-      right: 0;
-      font-size: 24px;
-      letter-spacing: 20px;
-      opacity: 0.3;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: clamp(28px, 6vw, 48px);
-      font-weight: 900;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-      position: relative;
-      z-index: 1;
-    }
-
-    .header p {
-      color: rgba(255,255,255,0.9);
-      font-size: 18px;
-      margin-top: 8px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .header-stars {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none;
-    }
-
-    .star {
-      position: absolute;
-      font-size: 20px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    /* ===== NAV ===== */
-    .nav {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 20px;
-      max-width: 900px;
-      margin: -20px auto 0;
-      position: relative;
-      z-index: 2;
-    }
-
-    .nav-btn {
-      background: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .nav-btn.active {
-      background: var(--pink);
-      color: white;
-    }
-
-    .nav-btn .emoji { font-size: 20px; }
-
-    /* ===== MAIN ===== */
-    .main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px 16px 60px;
-    }
-
-    .game-section {
-      display: none;
-    }
-
-    .game-section.active {
-      display: block;
-      animation: fadeIn 0.4s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== GAME CARD ===== */
-    .game-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 32px;
-      overflow: hidden;
-    }
-
-    .game-header {
-      padding: 24px 28px 20px;
-      border-bottom: 3px dashed #f0e8d8;
-    }
-
-    .game-title {
-      font-size: 24px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .game-title .icon { font-size: 32px; }
-
-    .game-badge {
-      background: var(--yellow);
-      color: #333;
-      font-size: 13px;
-      font-weight: 700;
-      padding: 4px 14px;
-      border-radius: 50px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .game-body {
-      padding: 28px;
-    }
-
-    /* ===== INFO CARDS ===== */
-    .info-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 600px) {
-      .info-row { grid-template-columns: 1fr; }
-    }
-
-    .info-card {
-      background: #f8f4ff;
-      border-radius: var(--radius-sm);
-      padding: 20px;
-      border-left: 5px solid var(--purple);
-    }
-
-    .info-card.tip { border-left-color: var(--orange); background: #fff8f0; }
-    .info-card.knowledge { border-left-color: var(--blue); background: #f0faff; }
-
-    .info-card h3 {
-      font-size: 14px;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .info-card p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #444;
-    }
-
-    .info-card formula {
-      display: inline-block;
-      background: white;
-      padding: 6px 16px;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: 700;
-      margin-top: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      color: var(--purple);
-    }
-
-    /* ===== CANVAS AREA ===== */
-    .canvas-wrapper {
-      position: relative;
-      background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
-      border-radius: var(--radius-sm);
-      height: 280px;
-      overflow: hidden;
-      margin-bottom: 24px;
-      border: 3px solid #a5d6a7;
-    }
-
-    /* ===== CONTROLS ===== */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .control-group {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .control-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #555;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .slider-wrapper {
-      position: relative;
-      height: 20px;
-      background: #eee;
-      border-radius: 10px;
-      overflow: visible;
-    }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 20px;
-      background: transparent;
-      cursor: pointer;
-      position: absolute;
-      top: 0; left: 0;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 32px;
-      height: 32px;
-      background: var(--pink);
-      border-radius: 50%;
-      border: 4px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      cursor: grab;
-      margin-top: -6px;
-    }
-
-    input[type="range"]::-webkit-slider-runnable-track {
-      height: 20px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--pink), var(--orange));
-    }
-
-    .btn {
-      background: var(--pink);
-      color: white;
-      border: none;
-      padding: 14px 32px;
-      border-radius: 50px;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255,107,157,0.4);
-      transition: all 0.3s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255,107,157,0.5);
-    }
-
-    .btn:active { transform: translateY(0); }
-
-    .btn.green { background: var(--blue); box-shadow: 0 4px 16px rgba(77,150,255,0.3); }
-    .btn.green:hover { box-shadow: 0 6px 20px rgba(77,150,255,0.4); }
-
-    .btn.orange { background: var(--orange); box-shadow: 0 4px 16px rgba(255,140,66,0.4); }
-
-    /* ===== SPRING GAME ===== */
-    #spring-canvas-wrap {
-      background: linear-gradient(180deg, #fff9c4 0%, #fff176 100%);
-      border-color: #f9a825;
-    }
-
-    .spring-scene {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .spring-top {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 30px;
-      background: #78909c;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .spring-line {
-      position: absolute;
-      top: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 120px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .spring-coil {
-      width: 100%;
-      flex: 1;
-      position: relative;
-    }
-
-    .spring-coil::before {
-      content: '';
-      position: absolute;
-      left: 0; right: 0;
-      top: 50%;
-      height: 4px;
-      background: #78909c;
-      border-radius: 2px;
-    }
-
-    .spring-ball {
-      position: absolute;
-      top: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 60px;
-      background: radial-gradient(circle at 35% 35%, #ff8a80, #e53935);
-      border-radius: 50%;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25), inset 0 -4px 8px rgba(0,0,0,0.1);
-      transition: top 0.05s linear;
-    }
-
-    .spring-ball::after {
-      content: '😤';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 28px;
-    }
-
-    .spring-ball.jumping::after {
-      content: '😊';
-      animation: bounce-face 0.5s ease;
-    }
-
-    @keyframes bounce-face {
-      0% { transform: translate(-50%, -50%) scale(1); }
-      50% { transform: translate(-50%, -60%) scale(1.3); }
-      100% { transform: translate(-50%, -50%) scale(1); }
-    }
-
-    .spring-floor {
-      position: absolute;
-      bottom: 20px;
-      left: 0; right: 0;
-      height: 20px;
-      background: #8d6e63;
-      border-radius: 4px;
-    }
-
-    .spring-label {
-      position: absolute;
-      bottom: 50px;
-      left: 20px;
-      background: white;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* ===== SEESAW GAME ===== */
-    #seesaw-canvas-wrap {
-      background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
-      border-color: #64b5f6;
-    }
-
-    .seesaw-scene {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .seesaw-pivot {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 25px solid transparent;
-      border-right: 25px solid transparent;
-      border-bottom: 40px solid #ff8a65;
-    }
-
-    .seesaw-plank {
-      position: absolute;
-      bottom: 58px;
-      left: 50%;
-      width: 320px;
-      height: 16px;
-      background: linear-gradient(180deg, #a1887f, #8d6e63);
-      border-radius: 8px;
-      transform-origin: center bottom;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      transition: transform 0.3s ease;
-    }
-
-    .seesaw-weight {
-      position: absolute;
-      bottom: -50px;
-      border-radius: 12px;
-      font-size: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 700;
-      color: white;
-    }
-
-    .seesaw-weight.left {
-      left: 30px;
-      width: 50px;
-      height: 50px;
-      background: var(--pink);
-    }
-
-    .seesaw-weight.right {
-      right: 30px;
-      width: 50px;
-      height: 50px;
-      background: var(--blue);
-    }
-
-    .seesaw-center-marker {
-      position: absolute;
-      bottom: 58px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 16px;
-      height: 16px;
-      background: white;
-      border-radius: 50%;
-      border: 3px solid #64b5f6;
-      z-index: 2;
-    }
-
-    .seesaw-label {
-      position: absolute;
-      bottom: 80px;
-      left: 20px;
-      background: white;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* ===== SHADOW GAME ===== */
-    #shadow-canvas-wrap {
-      background: linear-gradient(180deg, #fff3e0 0%, #ffe0b2 100%);
-      border-color: #ffb74d;
-    }
-
-    .shadow-scene {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .shadow-sun {
-      position: absolute;
-      top: 20px;
-      left: 40px;
-      width: 70px;
-      height: 70px;
-    }
-
-    .sun-body {
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 40% 40%, #fff176, #ffd93d);
-      border-radius: 50%;
-      box-shadow: 0 0 30px rgba(255,217,61,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-    }
-
-    .sun-rays {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 120%;
-      height: 120%;
-      transform: translate(-50%, -50%);
-      animation: spin 20s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: translate(-50%, -50%) rotate(0deg); }
-      to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-
-    .shadow-stick {
-      position: absolute;
-      bottom: 20px;
-      left: 200px;
-      width: 10px;
-      height: 120px;
-      background: linear-gradient(180deg, #8d6e63, #6d4c41);
-      border-radius: 5px;
-      transform-origin: bottom center;
-    }
-
-    .shadow-ground {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 20px;
-      background: #795548;
-    }
-
-    .shadow-stick-shadow {
-      position: absolute;
-      bottom: 0;
-      left: 220px;
-      height: 8px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 4px;
-      transform-origin: left center;
-    }
-
-    .shadow-label {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: white;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* ===== REFLECTION GAME ===== */
-    #reflection-canvas-wrap {
-      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-      border-color: #0f3460;
-    }
-
-    .reflection-scene {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .laser-beam {
-      position: absolute;
-      height: 4px;
-      background: #ff1744;
-      border-radius: 2px;
-      box-shadow: 0 0 10px rgba(255,23,68,0.8), 0 0 20px rgba(255,23,68,0.4);
-      transform-origin: left center;
-    }
-
-    .laser-dot {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      background: #ff1744;
-      border-radius: 50%;
-      box-shadow: 0 0 15px rgba(255,23,68,0.8);
-    }
-
-    .mirror {
-      position: absolute;
-      width: 120px;
-      height: 14px;
-      background: linear-gradient(180deg, #b0bec5, #eceff1, #b0bec5);
-      border-radius: 7px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      cursor: grab;
-      transform-origin: center center;
-    }
-
-    .mirror::before {
-      content: '🪞';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-    }
-
-    .target {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background: radial-gradient(circle, #69f0ae, #00c853);
-      border-radius: 50%;
-      border: 4px solid white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 0 20px rgba(0,200,83,0.5);
-    }
-
-    .reflection-label {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,255,255,0.1);
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      color: white;
-      white-space: nowrap;
-    }
-
-    .angle-display {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255,255,255,0.15);
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      color: white;
-    }
-
-    /* ===== RESULT BANNER ===== */
-    .result-banner {
-      display: none;
-      text-align: center;
-      padding: 20px;
-      border-radius: var(--radius-sm);
-      margin-top: 16px;
-      font-size: 18px;
-      font-weight: 700;
-      animation: popIn 0.5s ease;
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      70% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .result-banner.success {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 3px solid #66bb6a;
-    }
-
-    .result-banner.show { display: block; }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      text-align: center;
-      padding: 24px;
-      color: #aaa;
-      font-size: 13px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 小小物理學家 - 動手玩科學！</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .game-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .game-panel {
+            display: none;
+            padding: 30px;
+        }
+
+        .game-panel.active {
+            display: block;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ctrl-btn {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .ctrl-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .pause-btn {
+            background: #FF9800;
+            color: white;
+        }
+
+        .reset-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .canvas-area {
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 100%);
+            border-radius: 20px;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 4px solid #667eea;
+        }
+
+        .param-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .param-item {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 20px;
+            min-width: 200px;
+        }
+
+        .param-label {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .param-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 10px;
+            background: #ddd;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .feedback-panel {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .feedback-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feedback-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        /* Game 1: Spring */
+        .spring-wall {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 30px;
+            height: 250px;
+            background: linear-gradient(90deg, #888, #ccc, #888);
+            border-radius: 5px;
+        }
+
+        .spring-coil {
+            position: absolute;
+            left: 80px;
+            top: 50px;
+            width: 150px;
+            height: 20px;
+        }
+
+        .spring-mass {
+            position: absolute;
+            left: 200px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FF6B6B, #EE5A5A);
+            border-radius: 20px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .spring-mass:active {
+            cursor: grabbing;
+        }
+
+        .spring-string {
+            position: absolute;
+            left: 80px;
+            top: 55px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform-origin: left center;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(to bottom, #8B4513, #654321);
+        }
+
+        .grass {
+            position: absolute;
+            bottom: 45px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: #4CAF50;
+        }
+
+        /* Game 2: Seesaw */
+        .seesaw-base {
+            position: absolute;
+            left: 50%;
+            bottom: 50px;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .seesaw-plank {
+            position: absolute;
+            left: 50%;
+            bottom: 105px;
+            width: 500px;
+            height: 20px;
+            background: linear-gradient(90deg, #8B4513, #A0522D, #8B4513);
+            border-radius: 10px;
+            transform-origin: center center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .seesaw-weight {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .seesaw-weight:active {
+            cursor: grabbing;
+        }
+
+        .seesaw-pivot {
+            position: absolute;
+            left: 50%;
+            bottom: 95px;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #f44336;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Game 3: Shadow */
+        .sun {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 0 60px #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .sun:active {
+            cursor: grabbing;
+        }
+
+        .stick-figure {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .stick-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 80px;
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .stick-head {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #FFDAB9;
+            border-radius: 50%;
+            border: 3px solid #333;
+        }
+
+        .shadow-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(to bottom, #DEB887, #D2B48C);
+        }
+
+        .shadow-line {
+            position: absolute;
+            bottom: 50px;
+            height: 8px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+            transform-origin: left bottom;
+        }
+
+        /* Game 4: Light Reflection */
+        .light-source {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #fff, #ffeb3b);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ffeb3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .mirror {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 20px;
+            background: linear-gradient(180deg, #E0E0E0, #BDBDBD);
+            border-radius: 10px;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .mirror:active {
+            cursor: grabbing;
+        }
+
+        .target {
+            position: absolute;
+            right: 50px;
+            bottom: 100px;
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .ray-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .angle-display {
+            position: absolute;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .challenge-banner {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .game-panel {
+                padding: 15px;
+            }
+
+            .canvas-area {
+                height: 280px;
+            }
+
+            .param-item {
+                min-width: 150px;
+            }
+
+            .seesaw-plank {
+                width: 320px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<div class="header">
-  <div class="header-stars">
-    <span class="star" style="top:15%;left:10%;animation-delay:0s">⭐</span>
-    <span class="star" style="top:25%;left:80%;animation-delay:1s">✨</span>
-    <span class="star" style="top:60%;left:5%;animation-delay:2s">🌙</span>
-    <span class="star" style="top:70%;left:85%;animation-delay:0.5s">⭐</span>
-    <span class="star" style="top:10%;left:50%;animation-delay:1.5s">🌈</span>
-  </div>
-  <h1>🌟 小小物理學家 🌟</h1>
-  <p>快樂玩遊戲，輕鬆學物理！</p>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <button class="nav-btn active" onclick="showGame(0)"><span class="emoji">🎀</span> 彈簧跳跳</button>
-  <button class="nav-btn" onclick="showGame(1)"><span class="emoji">⚖️</span> 翹翹板</button>
-  <button class="nav-btn" onclick="showGame(2)"><span class="emoji">🌞</span> 影子變變</button>
-  <button class="nav-btn" onclick="showGame(3)"><span class="emoji">🔦</span> 光纖反射</button>
-</div>
-
-<div class="main">
-
-  <!-- ===== GAME 1: SPRING ===== -->
-  <section class="game-section active" id="game-0">
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-title">
-          <span class="icon">🎀</span>
-          彈簧跳跳
-          <span class="game-badge">🔧 修復中</span>
-        </div>
-      </div>
-      <div class="game-body">
-        <div class="info-row">
-          <div class="info-card">
-            <h3>🎮 遊戲說明</h3>
-            <p>拉動滑桿把彈簧拉長，然後按下「放開」按鈕，看球球彈高高！試著拉不同長度，觀察彈跳高度有什麼不同。</p>
-          </div>
-          <div class="info-card knowledge">
-            <h3>📚 物理知識</h3>
-            <p>當你拉彈簧時，你給了它「彈力位能」。拉得越長，位能越多，放開時就彈得越高！</p>
-            <formula>彈力位能 = ½ × k × x²</formula>
-          </div>
-        </div>
-
-        <div class="canvas-wrapper" id="spring-canvas-wrap">
-          <div class="spring-scene" id="spring-scene">
-            <div class="spring-top"></div>
-            <div class="spring-line" id="spring-coils">
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-              <div class="spring-coil"></div>
-            </div>
-            <div class="spring-ball" id="spring-ball"></div>
-            <div class="spring-floor"></div>
-            <div class="spring-label" id="spring-label">拉力：0%</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <div class="control-group">
-            <div class="control-label">🔧 拉力調整（拉多長？）</div>
-            <div class="slider-wrapper">
-              <input type="range" id="spring-slider" min="0" max="100" value="0" style="width:100%">
-            </div>
-          </div>
-          <button class="btn orange" id="spring-release" onclick="springRelease()">🎉 放開！讓球彈起來</button>
-        </div>
-
-        <div class="result-banner" id="spring-result"></div>
-      </div>
+    <div class="header">
+        <h1>🧪 小小物理學家</h1>
+        <p>動手玩科學，快樂學物理！✨</p>
     </div>
-  </section>
 
-  <!-- ===== GAME 2: SEESAW ===== -->
-  <section class="game-section" id="game-1">
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-title">
-          <span class="icon">⚖️</span>
-          翹翹板平衡
-          <span class="game-badge">✨ 平衡大挑戰</span>
-        </div>
-      </div>
-      <div class="game-body">
-        <div class="info-row">
-          <div class="info-card">
-            <h3>🎮 遊戲說明</h3>
-            <p>調整右邊的重量砝碼，讓翹翹板保持平衡！想一想：離支點越遠，需要的重量就越輕，這就是槓桿原理！</p>
-          </div>
-          <div class="info-card knowledge">
-            <h3>📚 物理知識</h3>
-            <p>槓桿原理：力量 × 距離 = 力量 × 距離。左邊放了 3 個砝碼，要讓右邊平衡，可以放少一顆但放遠一點！</p>
-            <formula>F₁ × d₁ = F₂ × d₂</formula>
-          </div>
-        </div>
-
-        <div class="canvas-wrapper" id="seesaw-canvas-wrap">
-          <div class="seesaw-scene" id="seesaw-scene">
-            <div class="seesaw-pivot"></div>
-            <div class="seesaw-center-marker"></div>
-            <div class="seesaw-plank" id="seesaw-plank">
-              <div class="seesaw-weight left" id="seesaw-left">3</div>
-              <div class="seesaw-weight right" id="seesaw-right">1</div>
-            </div>
-            <div class="seesaw-label" id="seesaw-label">右邊重量：1</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <div class="control-group">
-            <div class="control-label">⚖️ 右邊重量調整</div>
-            <div class="slider-wrapper">
-              <input type="range" id="seesaw-slider" min="1" max="6" value="1" style="width:100%">
-            </div>
-          </div>
-        </div>
-
-        <div class="result-banner" id="seesaw-result"></div>
-      </div>
+    <div class="game-tabs">
+        <button class="tab-btn active" onclick="switchGame(1)">🔄 彈簧跳跳</button>
+        <button class="tab-btn" onclick="switchGame(2)">⚖️ 翹翹板平衡</button>
+        <button class="tab-btn" onclick="switchGame(3)">☀️ 影子變變變</button>
+        <button class="tab-btn" onclick="switchGame(4)">🔦 光纖反射</button>
     </div>
-  </section>
 
-  <!-- ===== GAME 3: SHADOW ===== -->
-  <section class="game-section" id="game-2">
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-title">
-          <span class="icon">🌞</span>
-          影子變變變
-          <span class="game-badge">✨ 太陽與影子</span>
-        </div>
-      </div>
-      <div class="game-body">
-        <div class="info-row">
-          <div class="info-card">
-            <h3>🎮 遊戲說明</h3>
-            <p>調整太陽的高度，觀察影子會怎麼變化！太陽升得越高，影子就越短；太陽低低的，影子就長長的。</p>
-          </div>
-          <div class="info-card knowledge">
-            <h3>📚 物理知識</h3>
-            <p>光是直直往前跑的！當光線遇到棍子會被擋住，地面上照不到光的地方就是影子。太陽高時光線幾乎垂直，影子就短。</p>
-            <formula>光源越高 → 影子越短</formula>
-          </div>
-        </div>
-
-        <div class="canvas-wrapper" id="shadow-canvas-wrap">
-          <div class="shadow-scene" id="shadow-scene">
-            <div class="shadow-sun" id="shadow-sun">
-              <div class="sun-rays">🌤️🌤️🌤️🌤️🌤️🌤️🌤️🌤️</div>
-              <div class="sun-body">☀️</div>
+    <div class="game-container">
+        <!-- Game 1: Spring -->
+        <div class="game-panel active" id="game1">
+            <div class="game-title">🔄 彈簧跳跳</div>
+            <div class="challenge-banner">🎯 挑戰：拖動質量球，觀察彈簧振盪！</div>
+            
+            <div class="controls">
+                <button class="ctrl-btn play-btn" onclick="game1.play()">▶️</button>
+                <button class="ctrl-btn pause-btn" onclick="game1.pause()">⏸️</button>
+                <button class="ctrl-btn reset-btn" onclick="game1.reset()">🔄</button>
             </div>
-            <div class="shadow-stick" id="shadow-stick"></div>
-            <div class="shadow-stick-shadow" id="shadow-stick-shadow"></div>
-            <div class="shadow-ground"></div>
-            <div class="shadow-label" id="shadow-label">影子長度：100px</div>
-          </div>
+
+            <div class="canvas-area" id="springArea">
+                <div class="spring-wall"></div>
+                <div class="spring-string" id="springString"></div>
+                <div class="spring-mass" id="springMass">🏋️</div>
+                <div class="grass"></div>
+                <div class="ground"></div>
+            </div>
+
+            <div class="param-panel">
+                <div class="param-item">
+                    <div class="param-label">⚖️ 質量 (kg)</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="massSlider" min="1" max="10" value="3">
+                        <span class="param-value" id="massValue">3</span>
+                    </div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">🔩 彈簧係數 (N/m)</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="kSlider" min="1" max="20" value="8">
+                        <span class="param-value" id="kValue">8</span>
+                    </div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">🍃 阻尼</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="dampingSlider" min="0" max="5" value="0.5" step="0.1">
+                        <span class="param-value" id="dampingValue">0.5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-panel">
+                <div class="feedback-title">即時彈力</div>
+                <div class="feedback-value" id="springForce">0.0 N</div>
+            </div>
         </div>
 
-        <div class="controls">
-          <div class="control-group">
-            <div class="control-label">🌞 太陽高度調整</div>
-            <div class="slider-wrapper">
-              <input type="range" id="shadow-slider" min="10" max="80" value="40" style="width:100%">
+        <!-- Game 2: Seesaw -->
+        <div class="game-panel" id="game2">
+            <div class="game-title">⚖️ 翹翹板平衡</div>
+            <div class="challenge-banner">🎯 挑戰：調整兩邊重量，讓翹翹板水平平衡！</div>
+            
+            <div class="controls">
+                <button class="ctrl-btn play-btn" onclick="game2.play()">▶️</button>
+                <button class="ctrl-btn pause-btn" onclick="game2.pause()">⏸️</button>
+                <button class="ctrl-btn reset-btn" onclick="game2.reset()">🔄</button>
             </div>
-          </div>
+
+            <div class="canvas-area" id="seesawArea">
+                <div class="seesaw-pivot"></div>
+                <div class="seesaw-plank" id="seesawPlank">
+                    <div class="seesaw-weight" id="weightLeft" style="background: linear-gradient(135deg, #E91E63, #C2185B); left: -35px; top: -60px;">5</div>
+                    <div class="seesaw-weight" id="weightRight" style="background: linear-gradient(135deg, #2196F3, #1976D2); right: -35px; top: -60px;">3</div>
+                </div>
+                <div class="grass"></div>
+                <div class="ground"></div>
+            </div>
+
+            <div class="param-panel">
+                <div class="param-item">
+                    <div class="param-label">🔴 左邊重量</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="leftWeightSlider" min="1" max="10" value="5">
+                        <span class="param-value" id="leftWeightValue">5</span>
+                    </div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">🔵 右邊重量</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="rightWeightSlider" min="1" max="10" value="3">
+                        <span class="param-value" id="rightWeightValue">3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-panel">
+                <div class="feedback-title">傾斜角度</div>
+                <div class="feedback-value" id="seesawAngle">0.0°</div>
+            </div>
         </div>
-      </div>
+
+        <!-- Game 3: Shadow -->
+        <div class="game-panel" id="game3">
+            <div class="game-title">☀️ 影子變變變</div>
+            <div class="challenge-banner">🎯 挑戰：移動太陽，改變影子長度！</div>
+            
+            <div class="controls">
+                <button class="ctrl-btn play-btn" onclick="game3.play()">▶️</button>
+                <button class="ctrl-btn pause-btn" onclick="game3.pause()">⏸️</button>
+                <button class="ctrl-btn reset-btn" onclick="game3.reset()">🔄</button>
+            </div>
+
+            <div class="canvas-area" id="shadowArea">
+                <div class="sun" id="sun">☀️</div>
+                <div class="stick-figure">
+                    <div class="stick-head"></div>
+                    <div class="stick-body"></div>
+                </div>
+                <div class="shadow-line" id="shadowLine"></div>
+                <div class="shadow-ground"></div>
+            </div>
+
+            <div class="param-panel">
+                <div class="param-item">
+                    <div class="param-label">🧍 人物高度 (cm)</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="heightSlider" min="50" max="180" value="120">
+                        <span class="param-value" id="heightValue">120</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-panel">
+                <div class="feedback-title">影子長度</div>
+                <div class="feedback-value" id="shadowLength">80 cm</div>
+            </div>
+        </div>
+
+        <!-- Game 4: Light Reflection -->
+        <div class="game-panel" id="game4">
+            <div class="game-title">🔦 光纖反射</div>
+            <div class="challenge-banner">🎯 挑戰：旋轉鏡子，讓光線射中目標靶心！</div>
+            
+            <div class="controls">
+                <button class="ctrl-btn play-btn" onclick="game4.play()">▶️</button>
+                <button class="ctrl-btn pause-btn" onclick="game4.pause()">⏸️</button>
+                <button class="ctrl-btn reset-btn" onclick="game4.reset()">🔄</button>
+            </div>
+
+            <div class="canvas-area" id="lightArea">
+                <canvas class="ray-canvas" id="lightCanvas"></canvas>
+                <div class="light-source">💡</div>
+                <div class="mirror" id="mirror">🪞</div>
+                <div class="target" id="target">🎯</div>
+                <div class="angle-display" id="incidenceAngle">入射角: 45°</div>
+                <div class="angle-display" id="reflectionAngle">反射角: 45°</div>
+            </div>
+
+            <div class="param-panel">
+                <div class="param-item">
+                    <div class="param-label">🔄 鏡子角度</div>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="mirrorAngleSlider" min="0" max="90" value="45">
+                        <span class="param-value" id="mirrorAngleValue">45°</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-panel">
+                <div class="feedback-title">命中狀態</div>
+                <div class="feedback-value" id="hitStatus">未命中 ❌</div>
+            </div>
+        </div>
     </div>
-  </section>
-
-  <!-- ===== GAME 4: REFLECTION ===== -->
-  <section class="game-section" id="game-3">
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-title">
-          <span class="icon">🔦</span>
-          光纖反射
-          <span class="game-badge">🔧 修復中</span>
-        </div>
-      </div>
-      <div class="game-body">
-        <div class="info-row">
-          <div class="info-card">
-            <h3>🎮 遊戲說明</h3>
-            <p>用滑桿調整鏡子角度，讓紅色雷射光反射到綠色靶心！試試看，找到正確的角度讓光彈到目標上。</p>
-          </div>
-          <div class="info-card knowledge">
-            <h3>📚 物理知識</h3>
-            <p>光的反射定律：光碰到鏡子會反彈，而且入射角等於反射角，就像網球彈牆壁一樣！入射角＝反射角。</p>
-            <formula>入射角 = 反射角</formula>
-          </div>
-        </div>
-
-        <div class="canvas-wrapper" id="reflection-canvas-wrap">
-          <div class="reflection-scene" id="reflection-scene">
-            <div class="target" id="reflection-target">🎯</div>
-            <div class="mirror" id="reflection-mirror"></div>
-            <div class="laser-beam" id="laser-incident"></div>
-            <div class="laser-beam" id="laser-reflected"></div>
-            <div class="laser-dot" id="laser-dot-incident"></div>
-            <div class="laser-dot" id="laser-dot-reflected"></div>
-            <div class="angle-display" id="angle-display">鏡子角度：45°</div>
-            <div class="reflection-label">👆 拖曳鏡子 或 用滑桿調整角度</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <div class="control-group">
-            <div class="control-label">🪞 鏡子角度調整</div>
-            <div class="slider-wrapper">
-              <input type="range" id="reflection-slider" min="15" max="75" value="45" style="width:100%">
-            </div>
-          </div>
-        </div>
-
-        <div class="result-banner success" id="reflection-result">
-          🎉 太棒了！光成功反射到靶心！
-        </div>
-      </div>
-    </div>
-  </section>
-
-</div>
-
-<div class="footer">
-  用 💛 和 🎮 一起學物理 ｜ 小小物理學家 v3.0
-</div>
-
-<script>
-// ===== UTILITIES =====
-function lerp(a, b, t) { return a + (b - a) * t; }
-
-// ===== GAME SWITCHING =====
-let currentGame = 0;
-function showGame(idx) {
-  document.querySelectorAll('.game-section').forEach((s, i) => {
-    s.classList.toggle('active', i === idx);
-  });
-  document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === idx);
-  });
-  currentGame = idx;
-  initGame(idx);
-}
-
-// ===== SPRING GAME =====
-let springPull = 0;
-let springAnimating = false;
-
-function initSpring() {
-  const slider = document.getElementById('spring-slider');
-  slider.value = springPull;
-  updateSpring(springPull);
-}
-
-function updateSpring(pull) {
-  springPull = pull;
-  const ball = document.getElementById('spring-ball');
-  const coils = document.getElementById('spring-coils');
-  const label = document.getElementById('spring-label');
-
-  // ball position: pulled down, proportional to pull
-  const pullPx = pull * 1.2; // 0-120px pull
-  ball.style.top = (50 + pullPx) + 'px';
-
-  // coil height stretches
-  const coilH = Math.max(40, 120 - pullPx * 0.8);
-  coils.style.height = coilH + 'px';
-
-  // coil visual stretch
-  const stretch = 1 + pull * 0.015;
-  coils.style.transform = `translateX(-50%) scaleY(${stretch})`;
-
-  label.textContent = `拉力：${pull}%`;
-}
-
-document.getElementById('spring-slider').addEventListener('input', function() {
-  if (springAnimating) return;
-  springPull = parseInt(this.value);
-  updateSpring(springPull);
-  hideResult('spring-result');
-});
-
-function springRelease() {
-  if (springAnimating) return;
-  springAnimating = true;
-
-  const ball = document.getElementById('spring-ball');
-  const slider = document.getElementById('spring-slider');
-  const resultBanner = document.getElementById('spring-result');
-  const initialPull = springPull;
-
-  ball.classList.add('jumping');
-
-  // Animate pull → 0 (spring rebounds)
-  let startTime = null;
-  const duration = 800 + initialPull * 8; // longer pull = longer animation
-
-  function animate(ts) {
-    if (!startTime) startTime = ts;
-    const elapsed = ts - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-
-    // Ease out bounce
-    const easeOut = 1 - Math.pow(1 - progress, 3);
-    const bounce = springPull * (1 - easeOut);
-
-    updateSpring(Math.round(bounce));
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      updateSpring(0);
-      slider.value = 0;
-      springPull = 0;
-      springAnimating = false;
-      ball.classList.remove('jumping');
-
-      // Show result
-      const energy = Math.round(initialPull * initialPull * 0.5);
-      resultBanner.className = 'result-banner success show';
-      resultBanner.innerHTML = `🚀 彈力位能釋放！產生約 <strong>${energy}</strong> 單位的能量！球球飛高高囉～`;
-    }
-  }
-
-  requestAnimationFrame(animate);
-}
-
-// ===== SEESAW GAME =====
-function initSeesaw() {
-  const slider = document.getElementById('seesaw-slider');
-  updateSeesaw(parseInt(slider.value));
-}
-
-function updateSeesaw(rightWeight) {
-  const plank = document.getElementById('seesaw-plank');
-  const rightEl = document.getElementById('seesaw-right');
-  const label = document.getElementById('seesaw-label');
-  const resultBanner = document.getElementById('seesaw-result');
-
-  const leftWeight = 3;
-  const leftDist = 3;
-  const rightDist = 3;
-  const leftTorque = leftWeight * leftDist;
-  const rightTorque = rightWeight * rightDist;
-  const diff = leftTorque - rightTorque;
-
-  // Plank angle: max ~18 degrees, proportional to torque diff
-  const maxAngle = 18;
-  const angle = Math.max(-maxAngle, Math.min(maxAngle, diff * 3));
-  plank.style.transform = `rotate(${angle}deg)`;
-
-  rightEl.textContent = rightWeight;
-  label.textContent = `右邊重量：${rightWeight}（扭矩差：${Math.abs(diff)}）`;
-
-  // Check balance
-  if (Math.abs(diff) <= 0.5) {
-    resultBanner.className = 'result-banner success show';
-    resultBanner.innerHTML = '⚖️ 完美平衡！翹翹板平平的～';
-  } else if (diff > 0) {
-    resultBanner.className = 'result-banner show';
-    resultBanner.style.background = '#fff3e0';
-    resultBanner.style.color = '#e65100';
-    resultBanner.style.borderColor = '#ff9800';
-    resultBanner.innerHTML = diff > 0 ? '⬅️ 左邊比較重，翹翹板往左傾！' : '➡️ 右邊比較重，翹翹板往右傾！';
-  } else {
-    resultBanner.className = 'result-banner show';
-    resultBanner.style.background = '#e3f2fd';
-    resultBanner.style.color = '#1565c0';
-    resultBanner.style.borderColor = '#42a5f5';
-    resultBanner.innerHTML = '➡️ 右邊比較重，翹翹板往右傾！';
-  }
-}
-
-document.getElementById('seesaw-slider').addEventListener('input', function() {
-  updateSeesaw(parseInt(this.value));
-});
-
-function hideResult(id) {
-  document.getElementById(id).className = 'result-banner';
-}
-
-// ===== SHADOW GAME =====
-function initShadow() {
-  const slider = document.getElementById('shadow-slider');
-  updateShadow(parseInt(slider.value));
-}
-
-function updateShadow(sunY) {
-  const sun = document.getElementById('shadow-sun');
-  const shadow = document.getElementById('shadow-stick-shadow');
-  const label = document.getElementById('shadow-label');
-  const canvasH = 280;
-
-  // sun position
-  sun.style.top = (sunY - 35) + 'px';
-
-  // shadow length: inverse of sun height
-  // sunY: 10 (low) → shadow long (120px), sunY: 80 (high) → shadow short (20px)
-  const shadowLen = Math.round(140 - sunY * 1.5);
-  shadow.style.width = Math.max(20, shadowLen) + 'px';
-  shadow.style.left = (200 + 30) + 'px';
-
-  label.textContent = `影子長度：${Math.max(20, shadowLen)}px`;
-}
-
-document.getElementById('shadow-slider').addEventListener('input', function() {
-  updateShadow(parseInt(this.value));
-});
-
-// ===== REFLECTION GAME =====
-let mirrorAngle = 45;
-let laserFixed = false;
-
-function initReflection() {
-  const slider = document.getElementById('reflection-slider');
-  slider.value = mirrorAngle;
-  updateReflection(mirrorAngle);
-}
-
-function updateReflection(angle) {
-  mirrorAngle = angle;
-  const scene = document.getElementById('reflection-scene');
-  const w = scene.offsetWidth || 400;
-  const h = scene.offsetHeight || 280;
-
-  // Fixed laser: origin from left side, pointing right-upward
-  const laserOriginX = 20;
-  const laserOriginY = h * 0.65;
-
-  // Laser angle (from horizontal): fixed at 30 degrees upward
-  const laserAngleDeg = 30;
-  const laserAngleRad = laserAngleDeg * Math.PI / 180;
-
-  // Laser end point
-  const laserEndX = laserOriginX + 400 * Math.cos(laserAngleRad);
-  const laserEndY = laserOriginY - 400 * Math.sin(laserAngleRad);
-
-  // Mirror: center in the scene
-  const mirrorCX = w * 0.55;
-  const mirrorCY = h * 0.45;
-  const mirrorAngleRad = angle * Math.PI / 180;
-
-  // Mirror half-length
-  const mirrorLen = 70;
-  const mx1 = mirrorCX - mirrorLen * Math.cos(mirrorAngleRad);
-  const my1 = mirrorCY - mirrorLen * Math.sin(mirrorAngleRad);
-  const mx2 = mirrorCX + mirrorLen * Math.cos(mirrorAngleRad);
-  const my2 = mirrorCY + mirrorLen * Math.sin(mirrorAngleRad);
-
-  // Find intersection between laser and mirror line
-  const intersection = lineIntersection(
-    laserOriginX, laserOriginY, laserEndX, laserEndY,
-    mx1, my1, mx2, my2
-  );
-
-  if (!intersection) {
-    document.getElementById('reflection-result').classList.remove('show');
-    return;
-  }
-
-  const [ix, iy] = intersection;
-
-  // Incident laser: from origin to intersection
-  drawLaser('laser-incident', laserOriginX, laserOriginY, ix, iy, 'laser-dot-incident', ix, iy);
-
-  // Reflected laser: from intersection, using reflection law
-  // Mirror normal
-  const nx = -Math.sin(mirrorAngleRad);
-  const ny = Math.cos(mirrorAngleRad);
-
-  // Incident direction
-  const incDX = Math.cos(laserAngleRad);
-  const incDY = -Math.sin(laserAngleRad);
-
-  // Reflection: r = d - 2(d·n)n
-  const dot = incDX * nx + incDY * ny;
-  const refDX = incDX - 2 * dot * nx;
-  const refDY = incDY - 2 * dot * ny;
-
-  const refEndX = ix + 500 * refDX;
-  const refEndY = iy + 500 * refDY;
-
-  drawLaser('laser-reflected', ix, iy, refEndX, refEndY, 'laser-dot-reflected', refEndX, refEndY);
-
-  // Mirror position and rotation
-  const mirrorEl = document.getElementById('reflection-mirror');
-  mirrorEl.style.left = (mirrorCX - mirrorLen) + 'px';
-  mirrorEl.style.top = (mirrorCY - 7) + 'px';
-  mirrorEl.style.transform = `rotate(${angle}deg)`;
-
-  // Target position: upper right area
-  const targetEl = document.getElementById('reflection-target');
-  const targetX = w * 0.8;
-  const targetY = h * 0.2;
-  targetEl.style.left = (targetX - 25) + 'px';
-  targetEl.style.top = (targetY - 25) + 'px';
-
-  // Check if reflected laser hits target
-  const dist = Math.sqrt(Math.pow(refEndX - targetX, 2) + Math.pow(refEndY - targetY, 2));
-  const resultBanner = document.getElementById('reflection-result');
-  const angleDisplay = document.getElementById('angle-display');
-  angleDisplay.textContent = `鏡子角度：${angle}°`;
-
-  if (dist < 60) {
-    resultBanner.classList.add('show');
-  } else {
-    resultBanner.classList.remove('show');
-  }
-}
-
-function drawLaser(id, x1, y1, x2, y2, dotId, dx, dy) {
-  const laser = document.getElementById(id);
-  const dot = document.getElementById(dotId);
-  const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
-  const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
-
-  laser.style.left = x1 + 'px';
-  laser.style.top = y1 + 'px';
-  laser.style.width = len + 'px';
-  laser.style.transform = `rotate(${angle}deg)`;
-
-  dot.style.left = (dx - 6) + 'px';
-  dot.style.top = (dy - 6) + 'px';
-}
-
-function lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
-  const denom = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
-  if (Math.abs(denom) < 0.001) return null;
-
-  const t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / denom;
-  const u = -((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3)) / denom;
-
-  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-    return [x1 + t*(x2-x1), y1 + t*(y2-y1)];
-  }
-  return null;
-}
-
-document.getElementById('reflection-slider').addEventListener('input', function() {
-  updateReflection(parseInt(this.value));
-});
-
-// Mirror drag
-let draggingMirror = false;
-const mirrorEl = document.getElementById('reflection-mirror');
-
-mirrorEl.addEventListener('mousedown', function(e) {
-  draggingMirror = true;
-  e.preventDefault();
-});
-
-document.addEventListener('mousemove', function(e) {
-  if (!draggingMirror) return;
-  const scene = document.getElementById('reflection-scene');
-  const rect = scene.getBoundingClientRect();
-  const cx = rect.left + rect.width * 0.55;
-  const cy = rect.top + rect.height * 0.45;
-  const dx = e.clientX - cx;
-  const dy = e.clientY - cy;
-  let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-  angle = Math.max(15, Math.min(75, angle));
-  mirrorEl.parentElement.style.transform = '';
-  document.getElementById('reflection-slider').value = Math.round(angle);
-  updateReflection(Math.round(angle));
-});
-
-document.addEventListener('mouseup', function() {
-  draggingMirror = false;
-});
-
-// Touch drag
-mirrorEl.addEventListener('touchstart', function(e) {
-  draggingMirror = true;
-  e.preventDefault();
-});
-
-document.addEventListener('touchmove', function(e) {
-  if (!draggingMirror) return;
-  const touch = e.touches[0];
-  const scene = document.getElementById('reflection-scene');
-  const rect = scene.getBoundingClientRect();
-  const cx = rect.left + rect.width * 0.55;
-  const cy = rect.top + rect.height * 0.45;
-  const dx = touch.clientX - cx;
-  const dy = touch.clientY - cy;
-  let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-  angle = Math.max(15, Math.min(75, angle));
-  document.getElementById('reflection-slider').value = Math.round(angle);
-  updateReflection(Math.round(angle));
-});
-
-document.addEventListener('touchend', function() {
-  draggingMirror = false;
-});
-
-// ===== INIT =====
-function initGame(idx) {
-  if (idx === 0) initSpring();
-  else if (idx === 1) initSeesaw();
-  else if (idx === 2) initShadow();
-  else if (idx === 3) {
-    setTimeout(() => initReflection(), 100);
-  }
-}
-
-// Initial
-window.addEventListener('load', function() {
-  initGame(0);
-});
-</script>
+
+    <script>
+        // Game 1: Spring Physics
+        const game1 = {
+            isRunning: false,
+            position: 150,
+            velocity: 0,
+            mass: 3,
+            k: 8,
+            damping: 0.5,
+            equilibrium: 150,
+            animId: null,
+
+            init() {
+                this.massEl = document.getElementById('springMass');
+                this.stringEl = document.getElementById('springString');
+                this.forceEl = document.getElementById('springForce');
+
+                this.massEl.addEventListener('mousedown', (e) => this.startDrag(e));
+                this.massEl.addEventListener('touchstart', (e) => this.startDrag(e));
+
+                document.getElementById('massSlider').addEventListener('input', (e) => {
+                    this.mass = parseFloat(e.target.value);
+                    document.getElementById('massValue').textContent = this.mass;
+                });
+
+                document.getElementById('kSlider').addEventListener('input', (e) => {
+                    this.k = parseFloat(e.target.value);
+                    document.getElementById('kValue').textContent = this.k;
+                });
+
+                document.getElementById('dampingSlider').addEventListener('input', (e) => {
+                    this.damping = parseFloat(e.target.value);
+                    document.getElementById('dampingValue').textContent = this.damping;
+                });
+
+                this.updateDisplay();
+            },
+
+            startDrag(e) {
+                e.preventDefault();
+                this.pause();
+                const moveHandler = (e) => {
+                    const rect = document.getElementById('springArea').getBoundingClientRect();
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    let newPos = clientX - rect.left - 100;
+                    newPos = Math.max(80, Math.min(280, newPos));
+                    this.position = newPos;
+                    this.velocity = 0;
+                    this.updateDisplay();
+                };
+                const upHandler = () => {
+                    document.removeEventListener('mousemove', moveHandler);
+                    document.removeEventListener('mouseup', upHandler);
+                    document.removeEventListener('touchmove', moveHandler);
+                    document.removeEventListener('touchend', upHandler);
+                };
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('mouseup', upHandler);
+                document.addEventListener('touchmove', moveHandler);
+                document.addEventListener('touchend', upHandler);
+            },
+
+            play() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.lastTime = performance.now();
+                this.animate();
+            },
+
+            pause() {
+                this.isRunning = false;
+                if (this.animId) {
+                    cancelAnimationFrame(this.animId);
+                    this.animId = null;
+                }
+            },
+
+            reset() {
+                this.pause();
+                this.position = this.equilibrium;
+                this.velocity = 0;
+                this.updateDisplay();
+            },
+
+            animate() {
+                if (!this.isRunning) return;
+                const now = performance.now();
+                const dt = (now - this.lastTime) / 1000;
+                this.lastTime = now;
+
+                // Spring physics: F = -kx - bv
+                const displacement = this.position - this.equilibrium;
+                const springForce = -this.k * displacement;
+                const dampingForce = -this.damping * this.velocity;
+                const acceleration = (springForce + dampingForce) / this.mass;
+
+                this.velocity += acceleration * dt;
+                this.position += this.velocity * dt;
+
+                // Boundaries
+                if (this.position < 80) {
+                    this.position = 80;
+                    this.velocity *= -0.7;
+                } else if (this.position > 280) {
+                    this.position = 280;
+                    this.velocity *= -0.7;
+                }
+
+                this.updateDisplay();
+                this.animId = requestAnimationFrame(() => this.animate());
+            },
+
+            updateDisplay() {
+                this.massEl.style.left = this.position + 'px';
+                const stretch = this.position - 80;
+                const force = this.k * Math.abs(stretch) / 10;
+                this.forceEl.textContent = force.toFixed(1) + ' N';
+
+                // Update spring visual
+                const springSegments = 12;
+                const amplitude = 8 + (this.position - 150) * 0.05;
+                let svg = '';
+                for (let i = 0; i < springSegments; i++) {
+                    const x = i * 10;
+                    const y = 10 + (i % 2 === 0 ? -amplitude : amplitude);
+                    svg += `<line x1="${x}" y1="10" x2="${x + 5}" y2="${y}" stroke="#667eea" stroke-width="4" stroke-linecap="round"/>`;
+                }
+                this.stringEl.style.width = (this.position - 80) + 'px';
+
+                // Color feedback
+                if (force > 15) {
+                    this.forceEl.style.color = '#f44336';
+                } else if (force > 8) {
+                    this.forceEl.style.color = '#FF9800';
+                } else {
+                    this.forceEl.style.color = 'white';
+                }
+            }
+        };
+
+        // Game 2: Seesaw Physics
+        const game2 = {
+            isRunning: false,
+            angle: 0,
+            angularVelocity: 0,
+            leftWeight: 5,
+            rightWeight: 3,
+            plankLength: 250,
+            animId: null,
+            isDragging: null,
+            dragOffset: 0,
+
+            init() {
+                this.plankEl = document.getElementById('seesawPlank');
+                this.weightLeftEl = document.getElementById('weightLeft');
+                this.weightRightEl = document.getElementById('weightRight');
+                this.angleEl = document.getElementById('seesawAngle');
+
+                this.weightLeftEl.addEventListener('mousedown', (e) => this.startDrag(e, 'left'));
+                this.weightLeftEl.addEventListener('touchstart', (e) => this.startDrag(e, 'left'));
+                this.weightRightEl.addEventListener('mousedown', (e) => this.startDrag(e, 'right'));
+                this.weightRightEl.addEventListener('touchstart', (e) => this.startDrag(e, 'right'));
+
+                document.getElementById('leftWeightSlider').addEventListener('input', (e) => {
+                    this.leftWeight = parseFloat(e.target.value);
+                    document.getElementById('leftWeightValue').textContent = this.leftWeight;
+                    this.weightLeftEl.textContent = this.leftWeight;
+                    this.updateTorque();
+                });
+
+                document.getElementById('rightWeightSlider').addEventListener('input', (e) => {
+                    this.rightWeight = parseFloat(e.target.value);
+                    document.getElementById('rightWeightValue').textContent = this.rightWeight;
+                    this.weightRightEl.textContent = this.rightWeight;
+                    this.updateTorque();
+                });
+
+                this.updateTorque();
+            },
+
+            startDrag(e, side) {
+                e.preventDefault();
+                this.pause();
+                this.isDragging = side;
+                const moveHandler = (e) => {
+                    const rect = this.plankEl.getBoundingClientRect();
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const relativeX = clientX - rect.left - rect.width / 2;
+                    if (side === 'left') {
+                        const newPos = Math.max(-230, Math.min(-30, relativeX - 35));
+                        this.weightLeftEl.style.left = newPos + 'px';
+                    } else {
+                        const newPos = Math.max(30, Math.min(230, relativeX + 35));
+                        this.weightRightEl.style.right = (-newPos) + 'px';
+                    }
+                    this.updateTorque();
+                };
+                const upHandler = () => {
+                    this.isDragging = null;
+                    document.removeEventListener('mousemove', moveHandler);
+                    document.removeEventListener('mouseup', upHandler);
+                    document.removeEventListener('touchmove', moveHandler);
+                    document.removeEventListener('touchend', upHandler);
+                };
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('mouseup', upHandler);
+                document.addEventListener('touchmove', moveHandler);
+                document.addEventListener('touchend', upHandler);
+            },
+
+            updateTorque() {
+                const leftX = parseFloat(this.weightLeftEl.style.left) + 35;
+                const rightX = -parseFloat(this.weightRightEl.style.right) - 35;
+                const torque = this.leftWeight * leftX - this.rightWeight * rightX;
+                this.targetAngle = torque * 0.1;
+                this.updateDisplay();
+            },
+
+            play() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.lastTime = performance.now();
+                this.animate();
+            },
+
+            pause() {
+                this.isRunning = false;
+                if (this.animId) {
+                    cancelAnimationFrame(this.animId);
+                    this.animId = null;
+                }
+            },
+
+            reset() {
+                this.pause();
+                this.angle = 0;
+                this.angularVelocity = 0;
+                this.plankEl.style.transform = 'translateX(-50%) rotate(0deg)';
+                this.angleEl.textContent = '0.0°';
+            },
+
+            animate() {
+                if (!this.isRunning) return;
+                const now = performance.now();
+                const dt = (now - this.lastTime) / 1000;
+                this.lastTime = now;
+
+                // Angular acceleration from torque
+                const leftX = parseFloat(this.weightLeftEl.style.left) + 35;
+                const rightX = -parseFloat(this.weightRightEl.style.right) - 35;
+                const torque = this.leftWeight * leftX - this.rightWeight * rightX;
+                const momentOfInertia = this.leftWeight * leftX * leftX + this.rightWeight * rightX * rightX + 500;
+                const angularAcceleration = torque / momentOfInertia * 50;
+
+                this.angularVelocity += angularAcceleration * dt;
+                this.angularVelocity *= 0.98; // Damping
+                this.angle += this.angularVelocity * dt;
+
+                // Limits
+                this.angle = Math.max(-30, Math.min(30, this.angle));
+
+                this.updateDisplay();
+                this.animId = requestAnimationFrame(() => this.animate());
+            },
+
+            updateDisplay() {
+                this.plankEl.style.transform = `translateX(-50%) rotate(${this.angle.toFixed(1)}deg)`;
+                this.angleEl.textContent = this.angle.toFixed(1) + '°';
+
+                if (Math.abs(this.angle) < 2) {
+                    this.angleEl.style.color = '#4CAF50';
+                } else if (Math.abs(this.angle) < 10) {
+                    this.angleEl.style.color = '#FF9800';
+                } else {
+                    this.angleEl.style.color = 'white';
+                }
+            }
+        };
+
+        // Game 3: Shadow
+        const game3 = {
+            isRunning: false,
+            sunY: 50,
+            height: 120,
+            animId: null,
+
+            init() {
+                this.sunEl = document.getElementById('sun');
+                this.shadowEl = document.getElementById('shadowLine');
+                this.shadowLenEl = document.getElementById('shadowLength');
+                this.areaEl = document.getElementById('shadowArea');
+
+                this.sunEl.addEventListener('mousedown', (e) => this.startDrag(e));
+                this.sunEl.addEventListener('touchstart', (e) => this.startDrag(e));
+
+                document.getElementById('heightSlider').addEventListener('input', (e) => {
+                    this.height = parseFloat(e.target.value);
+                    document.getElementById('heightValue').textContent = this.height;
+                    this.updateDisplay();
+                });
+
+                this.updateDisplay();
+            },
+
+            startDrag(e) {
+                e.preventDefault();
+                this.pause();
+                const moveHandler = (e) => {
+                    const rect = this.areaEl.getBoundingClientRect();
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    this.sunY = Math.max(30, Math.min(rect.height - 130, clientY - rect.top));
+                    this.updateDisplay();
+                };
+                const upHandler = () => {
+                    document.removeEventListener('mousemove', moveHandler);
+                    document.removeEventListener('mouseup', upHandler);
+                    document.removeEventListener('touchmove', moveHandler);
+                    document.removeEventListener('touchend', upHandler);
+                };
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('mouseup', upHandler);
+                document.addEventListener('touchmove', moveHandler);
+                document.addEventListener('touchend', upHandler);
+            },
+
+            play() {
+                this.isRunning = true;
+                const animate = () => {
+                    if (!this.isRunning) return;
+                    this.sunY += 0.5;
+                    if (this.sunY > 250) this.sunY = 30;
+                    this.updateDisplay();
+                    this.animId = requestAnimationFrame(animate);
+                };
+                animate();
+            },
+
+            pause() {
+                this.isRunning = false;
+            },
+
+            reset() {
+                this.pause();
+                this.sunY = 50;
+                this.updateDisplay();
+            },
+
+            updateDisplay() {
+                this.sunEl.style.top = this.sunY + 'px';
+                this.sunEl.style.left = '50px';
+
+                const areaHeight = 300;
+                const sunCenterY = this.sunY + 40;
+                const figureHeight = this.height * 0.6;
+                const groundY = areaHeight - 50;
+
+                // Shadow calculation using similar triangles
+                const sunAngle = Math.atan2(groundY - sunCenterY, 300);
+                const shadowLength = figureHeight * Math.cos(sunAngle) / Math.sin(sunAngle);
+
+                this.shadowEl.style.left = 'calc(50% + 20px)';
+                this.shadowEl.style.width = Math.min(300, Math.max(20, shadowLength)) + 'px';
+                this.shadowEl.style.transform = `rotate(${(-sunAngle * 180 / Math.PI + 90).toFixed(1)}deg)`;
+
+                this.shadowLenEl.textContent = Math.round(shadowLength) + ' cm';
+
+                // Color feedback based on shadow length
+                if (shadowLength < 50) {
+                    this.shadowLenEl.style.color = '#FFD700'; // Short shadow = high sun
+                } else if (shadowLength < 150) {
+                    this.shadowLenEl.style.color = 'white';
+                } else {
+                    this.shadowLenEl.style.color = '#87CEEB'; // Long shadow = low sun
+                }
+            }
+        };
+
+        // Game 4: Light Reflection
+        const game4 = {
+            isRunning: false,
+            mirrorAngle: 45,
+            animId: null,
+
+            init() {
+                this.canvas = document.getElementById('lightCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.mirrorEl = document.getElementById('mirror');
+                this.targetEl = document.getElementById('target');
+                this.incidenceEl = document.getElementById('incidenceAngle');
+                this.reflectionEl = document.getElementById('reflectionAngle');
+                this.hitEl = document.getElementById('hitStatus');
+                this.areaEl = document.getElementById('lightArea');
+
+                this.mirrorEl.addEventListener('mousedown', (e) => this.startDrag(e));
+                this.mirrorEl.addEventListener('touchstart', (e) => this.startDrag(e));
+
+                document.getElementById('mirrorAngleSlider').addEventListener('input', (e) => {
+                    this.mirrorAngle = parseFloat(e.target.value);
+                    document.getElementById('mirrorAngleValue').textContent = this.mirrorAngle + '°';
+                    this.updateDisplay();
+                });
+
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.updateDisplay();
+            },
+
+            resizeCanvas() {
+                const rect = this.areaEl.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                this.updateDisplay();
+            },
+
+            startDrag(e) {
+                e.preventDefault();
+                this.pause();
+                const moveHandler = (e) => {
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const rect = this.areaEl.getBoundingClientRect();
+                    const relativeX = (clientX - rect.left) / rect.width;
+                    this.mirrorAngle = relativeX * 90;
+                    document.getElementById('mirrorAngleSlider').value = this.mirrorAngle;
+                    document.getElementById('mirrorAngleValue').textContent = Math.round(this.mirrorAngle) + '°';
+                    this.updateDisplay();
+                };
+                const upHandler = () => {
+                    document.removeEventListener('mousemove', moveHandler);
+                    document.removeEventListener('mouseup', upHandler);
+                    document.removeEventListener('touchmove', moveHandler);
+                    document.removeEventListener('touchend', upHandler);
+                };
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('mouseup', upHandler);
+                document.addEventListener('touchmove', moveHandler);
+                document.addEventListener('touchend', upHandler);
+            },
+
+            play() {
+                this.isRunning = true;
+            },
+
+            pause() {
+                this.isRunning = false;
+            },
+
+            reset() {
+                this.pause();
+                this.mirrorAngle = 45;
+                document.getElementById('mirrorAngleSlider').value = 45;
+                document.getElementById('mirrorAngleValue').textContent = '45°';
+                this.updateDisplay();
+            },
+
+            updateDisplay() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+
+                // Light source position
+                const lightX = 75;
+                const lightY = 75;
+
+                // Mirror position
+                const mirrorX = w * 0.5;
+                const mirrorY = h - 100;
+
+                // Mirror rotation
+                const mirrorRad = this.mirrorAngle * Math.PI / 180;
+                const mirrorLength = 75;
+                const mirrorStartX = mirrorX - Math.cos(mirrorRad) * mirrorLength;
+                const mirrorStartY = mirrorY - Math.sin(mirrorRad) * mirrorLength;
+                const mirrorEndX = mirrorX + Math.cos(mirrorRad) * mirrorLength;
+                const mirrorEndY = mirrorY + Math.sin(mirrorRad) * mirrorLength;
+
+                // Light ray direction
+                const rayAngle = Math.PI / 4; // 45 degrees down-right
+                const rayLength = 600;
+                const rayEndX = lightX + Math.cos(rayAngle) * rayLength;
+                const rayEndY = lightY + Math.sin(rayAngle) * rayLength;
+
+                // Find intersection with mirror
+                const intersection = this.lineIntersection(
+                    lightX, lightY, rayEndX, rayEndY,
+                    mirrorStartX, mirrorStartY, mirrorEndX, mirrorEndY
+                );
+
+                // Calculate incidence and reflection angles
+                const normalAngle = mirrorRad + Math.PI / 2;
+                const incidenceAngle = this.angleBetween(rayAngle, normalAngle);
+                const reflectionAngle = incidenceAngle;
+
+                // Reflection ray direction
+                const reflectionAngle2 = mirrorRad - Math.PI / 4;
+                const reflectionEndX = intersection ? intersection.x + Math.cos(reflectionAngle2) * 400 : rayEndX;
+                const reflectionEndY = intersection ? intersection.y + Math.sin(reflectionAngle2) * 400 : rayEndY;
+
+                // Target position
+                const targetX = w - 80;
+                const targetY = h - 140;
+                const targetWidth = 60;
+                const targetHeight = 80;
+
+                // Check if reflection hits target
+                let hitsTarget = false;
+                if (intersection) {
+                    const t = (targetX - intersection.x) / (reflectionEndX - intersection.x);
+                    if (t > 0 && t < 1) {
+                        const hitY = intersection.y + t * (reflectionEndY - intersection.y);
+                        if (hitY > targetY - targetHeight/2 && hitY < targetY + targetHeight/2) {
+                            hitsTarget = true;
+                        }
+                    }
+                }
+
+                // Clear and draw
+                this.ctx.clearRect(0, 0, w, h);
+
+                // Draw light ray
+                this.ctx.beginPath();
+                this.ctx.moveTo(lightX, lightY);
+                if (intersection) {
+                    this.ctx.lineTo(intersection.x, intersection.y);
+                } else {
+                    this.ctx.lineTo(rayEndX, rayEndY);
+                }
+                this.ctx.strokeStyle = '#FFEB3B';
+                this.ctx.lineWidth = 4;
+                this.ctx.shadowColor = '#FFEB3B';
+                this.ctx.shadowBlur = 15;
+                this.ctx.stroke();
+
+                // Draw reflection ray
+                if (intersection) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(intersection.x, intersection.y);
+                    this.ctx.lineTo(reflectionEndX, reflectionEndY);
+                    this.ctx.strokeStyle = '#FF9800';
+                    this.ctx.shadowColor = '#FF9800';
+                    this.ctx.stroke();
+                }
+
+                this.ctx.shadowBlur = 0;
+
+                // Update angle displays
+                const displayAngle = Math.abs(90 - this.mirrorAngle);
+                this.incidenceEl.textContent = `入射角: ${displayAngle.toFixed(0)}°`;
+                this.reflectionEl.textContent = `反射角: ${displayAngle.toFixed(0)}°`;
+                this.incidenceEl.style.left = (mirrorX - 80) + 'px';
+                this.incidenceEl.style.top = (mirrorY - 60) + 'px';
+                this.reflectionEl.style.left = (mirrorX + 20) + 'px';
+                this.reflectionEl.style.top = (mirrorY - 60) + 'px';
+
+                // Update hit status
+                if (hitsTarget) {
+                    this.hitEl.textContent = '命中！🎯';
+                    this.hitEl.style.color = '#4CAF50';
+                } else {
+                    this.hitEl.textContent = '未命中 ❌';
+                    this.hitEl.style.color = 'white';
+                }
+
+                // Update mirror visual
+                this.mirrorEl.style.left = mirrorX + 'px';
+                this.mirrorEl.style.bottom = '100px';
+                this.mirrorEl.style.transform = `translateX(-50%) rotate(${-this.mirrorAngle}deg)`;
+            },
+
+            lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+                const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+                if (Math.abs(denom) < 0.001) return null;
+
+                const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+                const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+                if (t > 0 && t < 1 && u > 0 && u < 1) {
+                    return {
+                        x: x1 + t * (x2 - x1),
+                        y: y1 + t * (y2 - y1)
+                    };
+                }
+                return null;
+            },
+
+            angleBetween(a1, a2) {
+                let diff = a1 - a2;
+                while (diff < -Math.PI) diff += 2 * Math.PI;
+                while (diff > Math.PI) diff -= 2 * Math.PI;
+                return diff;
+            }
+        };
+
+        // Game switching
+        function switchGame(num) {
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('game' + num).classList.add('active');
+            document.querySelectorAll('.tab-btn')[num - 1].classList.add('active');
+        }
+
+        // Initialize all games
+        window.addEventListener('load', () => {
+            game1.init();
+            game2.init();
+            game3.init();
+            game4.init();
+        });
+    </script>
 </body>
 </html>
